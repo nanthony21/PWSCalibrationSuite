@@ -104,25 +104,25 @@ class AxialXCorrScore(Score):
         tempData = (tempData - tempData.mean(axis=2)[:, :, None]) / tempData.std(axis=2)[:, :, None]
         testData = (testData - testData.mean(axis=2)[:, :, None]) / testData.std(axis=2)[:, :, None]
         # Cross correlate the whole array with no upsampling for some metrics without getting huge RAM usage.
-        corr = cls._normalizedCrossCorrelate(tempData, testData, upsampleFactor=1, axis=2)
+        corr = cls._crossCorrelate(tempData, testData, upsampleFactor=1, axis=2)
         corr = corr.mean(axis=(0, 1))
         peakIdx = corr.argmax()
         cdr = cls._calculate1DCDR(corr, peakIdx, 2)
         # Condense down to the average spectrum (1d) and then cross-correlate with upsampling to get a high resolution idea of the spectral shift.
         upsampleFactor = 10
-        corr = cls._normalizedCrossCorrelate(tempData.mean(axis=(0, 1)), testData.mean(axis=(0, 1)),
-                                             upsampleFactor=upsampleFactor, axis=0)
+        corr = cls._crossCorrelate(tempData.mean(axis=(0, 1)), testData.mean(axis=(0, 1)),
+                                   upsampleFactor=upsampleFactor, axis=0)
         zeroShiftIdx = corr.shape[0]//2
         shift = (peakIdx-zeroShiftIdx) / upsampleFactor  # Measured in pixels (before upsampling) pixels will be determined by the wavelength settings of acquisition.
         return cls(**{'score': float(corr.max()), 'shift': shift, 'cdr': float(cdr)})
 
     @staticmethod
-    def _reverse_and_conj(x):
+    def _reverse_and_conj(x, axis=-1):
         """
         Reverse array `x` in all dimensions and perform the complex conjugate.
         Copied from scipy.signal, This makes a convolution effectively a correlation. Modified to only effect the 2nd axis
         """
-        return x[:, :, ::-1].conj()
+        return np.flip(x, axis=axis).conj()
 
     @staticmethod
     def _calculate1DCDR(corr: np.ndarray, peakIdx: int, interval: int) -> float:
@@ -131,9 +131,8 @@ class AxialXCorrScore(Score):
         return (cdr2 + cdr1) / 2  # Take the average of the cdr in each direction
 
     @classmethod
-    def _normalizedCrossCorrelate(cls, arr1: np.ndarray, arr2: np.ndarray, upsampleFactor: int = 1, axis: int = -1) -> np.ndarray:
-        """Cross correlate arr1 with arr2 along one axis. correlation is normalized such that the maximum possible
-        correlation is 1.
+    def _crossCorrelate(cls, arr1: np.ndarray, arr2: np.ndarray, upsampleFactor: int = 1, axis: int = -1) -> np.ndarray:
+        """Cross correlate arr1 with arr2 along one axis.
 
         Args:
             arr1: A numpy array to use in the cross-correlation
@@ -154,7 +153,7 @@ class AxialXCorrScore(Score):
             arr2 = interp1d(x, arr2, axis=axis, kind='cubic')(x2)
         # Very hard to find support for 1d correlation on an Nd array. scipy.signal.fftconvolve appears to be the best option
         arr2 /= arr2.shape[axis]  # The division by testData.size here gives us a final xcorrelation that maxes out at 1.
-        corr = sps.fftconvolve(arr1, cls._reverse_and_conj(arr2), axes=axis, mode='full')
+        corr = sps.fftconvolve(arr1, cls._reverse_and_conj(arr2, axis=axis), axes=axis, mode='full')
         return corr
 
 @dataclasses.dataclass
