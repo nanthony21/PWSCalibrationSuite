@@ -108,13 +108,15 @@ class AxialXCorrScore(Score):
         corr = corr.mean(axis=(0, 1))
         peakIdx = corr.argmax()
         cdr = cls._calculate1DCDR(corr, peakIdx, 2)
+        maxCorr = float(corr.max())
         # Condense down to the average spectrum (1d) and then cross-correlate with upsampling to get a high resolution idea of the spectral shift.
         upsampleFactor = 10
         corr = cls._crossCorrelate(tempData.mean(axis=(0, 1)), testData.mean(axis=(0, 1)),
                                    upsampleFactor=upsampleFactor, axis=0)
         zeroShiftIdx = corr.shape[0]//2
+        peakIdx = corr.argmax()
         shift = (peakIdx-zeroShiftIdx) / upsampleFactor  # Measured in pixels (before upsampling) pixels will be determined by the wavelength settings of acquisition.
-        return cls(**{'score': float(corr.max()), 'shift': shift, 'cdr': float(cdr)})
+        return cls(**{'score': maxCorr, 'shift': shift, 'cdr': float(cdr)})
 
     @staticmethod
     def _reverse_and_conj(x, axis=-1):
@@ -152,8 +154,8 @@ class AxialXCorrScore(Score):
             arr1 = interp1d(x, arr1, axis=axis, kind='cubic')(x2)
             arr2 = interp1d(x, arr2, axis=axis, kind='cubic')(x2)
         # Very hard to find support for 1d correlation on an Nd array. scipy.signal.fftconvolve appears to be the best option
-        arr2 /= arr2.shape[axis]  # The division by testData.size here gives us a final xcorrelation that maxes out at 1.
-        corr = sps.fftconvolve(arr1, cls._reverse_and_conj(arr2, axis=axis), axes=axis, mode='full')
+        scaledArr2 = arr2 / arr2.shape[axis]  # The division by testData.size here gives us a final xcorrelation that maxes out at 1.
+        corr = sps.fftconvolve(arr1, cls._reverse_and_conj(scaledArr2, axis=axis), axes=axis, mode='full')
         return corr
 
 @dataclasses.dataclass
