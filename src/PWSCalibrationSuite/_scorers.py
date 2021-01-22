@@ -59,19 +59,6 @@ class Score(abc.ABC):
 
 
 @dataclasses.dataclass
-class XCorrScore(Score):  # Terrible performance, don't use.
-    @classmethod
-    def create(cls, tempData: np.ndarray, testData: np.ndarray) -> Score:
-        # Normalize Data. Correlation will pad with 0s so make sure the mean of the data is 0
-        tempData = (tempData - tempData.mean()) / tempData.std()
-        testData = (testData - testData.mean()) / (testData.std() * testData.size)
-
-        corr = sps.correlate(tempData, testData, mode='same')  # This would be faster if we did mode='valid', there would only be one value. But tiny alignment issues would result it us getting a lower correlation.
-        assert not np.any(np.isnan(corr)), "NaN values found in XCorrScorer"
-        return cls(score=corr.max())
-
-
-@dataclasses.dataclass
 class LateralXCorrScore(Score):
     shift: list
     cdrY: float
