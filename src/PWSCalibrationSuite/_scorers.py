@@ -100,22 +100,19 @@ class AxialXCorrScore(Score):
 
     @classmethod
     def create(cls, tempData: np.ndarray, testData: np.ndarray) -> AxialXCorrScore:
-        #Normalize Each XY pixel sso that the xcorrelation hasa max of 1.
+        # Normalize Each XY pixel to mean=0, stddev=1 so that the xcorrelation has a max of 1.
         tempData = (tempData - tempData.mean(axis=2)[:, :, None]) / tempData.std(axis=2)[:, :, None]
         testData = (testData - testData.mean(axis=2)[:, :, None]) / testData.std(axis=2)[:, :, None]
-        # Interpolate by 2x along the spectral axis for better resolution in axial shift. 4x used too much memory
-        upsampleFactor = 2
-        x = np.linspace(0, 1, num=tempData.shape[2])
-        x2 = np.linspace(0, 1, num=tempData.shape[2] * upsampleFactor)
-        tempData = interp1d(x, tempData, axis=2, kind='cubic')(x2)
-        testData = interp1d(x, testData, axis=2, kind='cubic')(x2)
-        # Very hard to find support for 1d correlation on an Nd array. scipy.signal.fftconvolve appears to be the best option
-        testData = testData / testData.shape[2]  # The division by testData.size here gives us a final xcorrelation that maxes out at 1.
-        corr = sps.fftconvolve(tempData, cls._reverse_and_conj(testData), axes=2, mode='full')
+        # Cross correlate the whole array with no upsampling for some metrics without getting huge RAM usage.
+        corr = cls._normalizedCrossCorrelate(tempData, testData, upsampleFactor=1, axis=2)
         corr = corr.mean(axis=(0, 1))
-        zeroShiftIdx = corr.shape[0]//2
         peakIdx = corr.argmax()
         cdr = cls._calculate1DCDR(corr, peakIdx, 2)
+        # Condense down to the average spectrum (1d) and then cross-correlate with upsampling to get a high resolution idea of the spectral shift.
+        upsampleFactor = 10
+        corr = cls._normalizedCrossCorrelate(tempData.mean(axis=(0, 1)), testData.mean(axis=(0, 1)),
+                                             upsampleFactor=upsampleFactor, axis=0)
+        zeroShiftIdx = corr.shape[0]//2
         shift = (peakIdx-zeroShiftIdx) / upsampleFactor  # Measured in pixels (before upsampling) pixels will be determined by the wavelength settings of acquisition.
         return cls(**{'score': float(corr.max()), 'shift': shift, 'cdr': float(cdr)})
 
@@ -133,6 +130,32 @@ class AxialXCorrScore(Score):
         cdr2 = (corr[peakIdx] - corr[peakIdx - interval]) / interval
         return (cdr2 + cdr1) / 2  # Take the average of the cdr in each direction
 
+    @classmethod
+    def _normalizedCrossCorrelate(cls, arr1: np.ndarray, arr2: np.ndarray, upsampleFactor: int = 1, axis: int = -1) -> np.ndarray:
+        """Cross correlate arr1 with arr2 along one axis. correlation is normalized such that the maximum possible
+        correlation is 1.
+
+        Args:
+            arr1: A numpy array to use in the cross-correlation
+            arr2: A numpy array with the same shape as `arr1` to be cross-correlated with `arr1`
+            upsampleFactor: In order to improve the resolution when looking at shift between the two arrays, the arrays
+                can be upsampled along their last axis with cubic interpolation before the cross-correlation
+            axis: The axis to correlate along.
+
+        Returns:
+            The cross-correlation result. The correlation axis will be of length (2*N)-1, where N is the length of the
+            input arrays along that same axis. The middle element corresponds to the correlation with no shift between
+            the two input arrays.
+        """
+        if upsampleFactor != 1:
+            x = np.linspace(0, 1, num=arr1.shape[axis])
+            x2 = np.linspace(0, 1, num=arr1.shape[axis] * upsampleFactor)
+            arr1 = interp1d(x, arr1, axis=axis, kind='cubic')(x2)
+            arr2 = interp1d(x, arr2, axis=axis, kind='cubic')(x2)
+        # Very hard to find support for 1d correlation on an Nd array. scipy.signal.fftconvolve appears to be the best option
+        arr2 /= arr2.shape[axis]  # The division by testData.size here gives us a final xcorrelation that maxes out at 1.
+        corr = sps.fftconvolve(arr1, cls._reverse_and_conj(arr2), axes=axis, mode='full')
+        return corr
 
 @dataclasses.dataclass
 class SSimScore(Score):
