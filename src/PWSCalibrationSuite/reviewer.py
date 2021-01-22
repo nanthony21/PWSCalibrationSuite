@@ -1,5 +1,5 @@
-from pwspy_gui.CalibrationSuite._utility import CVAffineTransform
-from pwspy_gui.CalibrationSuite.loaders import AbstractMeasurementLoader
+from PWSCalibrationSuite._utility import CVAffineTransform
+from PWSCalibrationSuite.loaders import AbstractMeasurementLoader
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np

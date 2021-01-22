@@ -1,6 +1,6 @@
 import pandas as pd
-from pwspy_gui.CalibrationSuite.testScripts import experimentInfo
-from pwspy_gui.CalibrationSuite.testScripts.loader import Loader
+from PWSCalibrationSuite.testScripts import experimentInfo
+from PWSCalibrationSuite.testScripts.loader import Loader
 import graphviz
 import matplotlib.pyplot as plt
 import os

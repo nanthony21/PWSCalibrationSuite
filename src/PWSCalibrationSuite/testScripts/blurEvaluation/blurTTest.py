@@ -1,10 +1,10 @@
 from PyQt5.QtWidgets import QApplication
 
-from pwspy_gui.CalibrationSuite._utility import CVAffineTransform
-from pwspy_gui.CalibrationSuite.testScripts import experimentInfo
+from PWSCalibrationSuite._utility import CVAffineTransform
+from PWSCalibrationSuite.testScripts import experimentInfo
 import pandas as pd
 import numpy as np
-from pwspy_gui.CalibrationSuite.testScripts.loader import Loader
+from PWSCalibrationSuite.testScripts.loader import Loader
 import sys
 
 """This script was a waste of time"""

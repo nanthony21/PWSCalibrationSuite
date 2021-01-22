@@ -1,12 +1,12 @@
-from pwspy_gui.CalibrationSuite._utility import CubeSplitter
-from pwspy_gui.CalibrationSuite.analyzer import Analyzer
+from PWSCalibrationSuite._utility import CubeSplitter
+from PWSCalibrationSuite.analyzer import Analyzer
 import os
 import logging
 import sys
 import matplotlib.pyplot as plt
 
-from pwspy_gui.CalibrationSuite.loaders import DateMeasurementLoader
-from pwspy_gui.CalibrationSuite.reviewer import Reviewer
+from PWSCalibrationSuite.loaders import DateMeasurementLoader
+from PWSCalibrationSuite.reviewer import Reviewer
 from mpl_qt_viz.visualizers import PlotNd
 import pandas as pd
 import numpy as np

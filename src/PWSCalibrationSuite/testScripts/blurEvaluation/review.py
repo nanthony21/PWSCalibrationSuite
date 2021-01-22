@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QApplication
 from numpy.core import long
 
-from pwspy_gui.CalibrationSuite._utility import CVAffineTransform
-from pwspy_gui.CalibrationSuite.reviewer import Reviewer
+from PWSCalibrationSuite._utility import CVAffineTransform
+from PWSCalibrationSuite.reviewer import Reviewer
 from ..loader import Loader
 import os
 import matplotlib.pyplot as plt

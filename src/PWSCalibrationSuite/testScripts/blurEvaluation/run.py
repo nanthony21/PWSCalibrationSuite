@@ -4,8 +4,8 @@ Created on Thu Dec 10 17:08:42 2020
 
 @author: backman05
 """
-from pwspy_gui.CalibrationSuite.TransformGenerator import TransformGenerator
-from pwspy_gui.CalibrationSuite.analyzer import Analyzer, TransformedDataSaver, TransformedDataScorer
+from PWSCalibrationSuite.TransformGenerator import TransformGenerator
+from PWSCalibrationSuite.analyzer import Analyzer, TransformedDataSaver, TransformedDataScorer
 from ..loader import Loader
 from importlib import reload
 import logging
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     import experimentInfo
     plt.ion()
     logger = configureLogger()
-    measurementSet = 'xcorr_blurScan'
+    measurementSet = 'xcorr_test'
     loader = Loader(experimentInfo.workingDirectory, measurementSet)
     transformer = TransformedDataSaver(loader, useCached=True, debugMode=False, method=TransformGenerator.Method.XCORR)
 
@@ -39,7 +39,7 @@ if __name__ == '__main__':
         tData.clearScores()
 
     # Start scoring.
-    for blur in list(range(1, 15)) + [None]:
+    for blur in [2]:
         logger.info(f"Starting blur {blur}")
         stime = time.time()
         scorer = TransformedDataScorer(loader, str(blur), blurSigma=blur,

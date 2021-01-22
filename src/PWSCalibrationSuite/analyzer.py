@@ -10,7 +10,7 @@ import multiprocessing as mp
 import cv2
 import pandas as pd
 from scipy.ndimage import binary_dilation
-from pwspy_gui.CalibrationSuite.TransformGenerator import TransformGenerator
+from PWSCalibrationSuite.TransformGenerator import TransformGenerator
 from pwspy.utility.fileIO import processParallel
 from ._scorers import *
 from ._utility import CVAffineTransform

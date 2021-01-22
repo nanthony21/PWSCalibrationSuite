@@ -9,9 +9,9 @@ import scipy.signal as sps
 from skimage import metrics
 from time import time
 from scipy.interpolate import interp1d
+from ._utility import DualCubeSplitter
 
 #TODO devise a way to inject a cube splitter into a scorer for more efficient high granularity scoring
-from pwspy_gui.CalibrationSuite._utility import DualCubeSplitter
 
 
 @dataclasses.dataclass
@@ -247,7 +247,7 @@ class SplitScore(Score):
         return cls(score=out)
 
 if __name__ == '__main__':
-    from pwspy_gui.CalibrationSuite.ITOMeasurement import ITOMeasurement
+    from PWSCalibrationSuite.ITOMeasurement import ITOMeasurement
     import os
     from pwspy.analysis.pws import PWSAnalysisSettings
     from pwspy.utility.reflection import Material
