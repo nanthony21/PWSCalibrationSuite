@@ -3,17 +3,18 @@ from numpy.core import long
 
 from PWSCalibrationSuite._utility import CVAffineTransform
 from PWSCalibrationSuite.reviewer import Reviewer
-from ..loader import Loader
+from PWSCalibrationSuite.testScripts import experimentInfo
 import os
 import matplotlib.pyplot as plt
 from mpl_qt_viz.visualizers import PlotNd, DockablePlotWindow
-import experimentInfo
 import pandas as pd
 import numpy as np
 
+from PWSCalibrationSuite.testScripts.loader import Loader
+
 
 def loadDataFrame(measurementSet: str) -> pd.DataFrame:
-    loader = Loader(experimentInfo.workingDirectory, measurementSet)
+    loader = Loader(experimentInfo.workingDirectory, measurementSet, readOnly=True)
     scoreNames = loader.measurements[0].loadTransformedData(
         loader.template.idTag).getScoreNames()  # We assume that all measurements have the same score names.
 
