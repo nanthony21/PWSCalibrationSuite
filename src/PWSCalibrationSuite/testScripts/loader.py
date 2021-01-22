@@ -13,14 +13,21 @@ class Loader(AbstractMeasurementLoader):
     """
     analysisSettings = pwsAnalysis.PWSAnalysisSettings.loadDefaultSettings("Recommended")
 
-    def __init__(self, rootDir: str, measurementSetName: str):
-        meas = self.generateITOMeasurements(rootDir, measurementSetName)
+    def __init__(self, rootDir: str, measurementSetName: str, readOnly: bool = False):
+        """
+
+        Args:
+            rootDir:
+            measurementSetName:
+            readOnly: If true then an exception will be thrown if the calibration files don't already exist. Otherwise new calibration files be begin being created.
+        """
+        meas = self.generateITOMeasurements(rootDir, measurementSetName, readOnly)
         template = [m for m in meas if m.name == 'centered_0_52'][0]
         self._template = template
         self._measurements = meas
 
     @classmethod
-    def generateITOMeasurements(cls, rootDir: str, measurementSetName: str):
+    def generateITOMeasurements(cls, rootDir: str, measurementSetName: str, readOnly: bool):
         measurements = []
         for expType in ['centered', 'fieldstop', 'translation']:
             for condition in os.listdir(os.path.join(rootDir, expType)):
@@ -29,7 +36,7 @@ class Loader(AbstractMeasurementLoader):
                     refAcq = pwsdt.AcqDir(os.path.join(rootDir, expType, condition, 'cells', "Cell3"))
                     name = f"{expType}_{condition}"
                     homeDir = os.path.join(rootDir, "calibrationResults", measurementSetName, name)
-                    measurements.append(ITOMeasurement(homeDir, itoAcq, refAcq, cls.analysisSettings, name))
+                    measurements.append(ITOMeasurement(homeDir, itoAcq, refAcq, cls.analysisSettings, name, readOnly=readOnly))
         return measurements
 
     @property
