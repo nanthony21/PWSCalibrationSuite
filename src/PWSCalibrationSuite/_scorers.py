@@ -142,6 +142,7 @@ class AxialXCorrScore(Score):
 
     @staticmethod
     def _calculate1DCDR(corr: np.ndarray, peakIdx: int, interval: int) -> float:
+        corr = corr / corr[peakIdx]  # Normalize so that peak correlation is 1. Otherwise our CDR is just correlated with peak correlation. (make sense?)
         cdr1 = (corr[peakIdx] - corr[peakIdx + interval]) / interval
         cdr2 = (corr[peakIdx] - corr[peakIdx - interval]) / interval
         return (cdr2 + cdr1) / 2  # Take the average of the cdr in each direction
