@@ -77,11 +77,12 @@ class LateralXCorrScore(Score):
         corr = sps.correlate(tempData, testData, mode='full')  # Using 'full' here instead of 'same' means that we can reliably know the index of the zero-shift element of the output
         zeroShiftIdx = (corr.shape[0]//2, corr.shape[1]//2)
         peakIdx = np.unravel_index(corr.argmax(), corr.shape)
-        cdrY, cdrX = cls._calculate2DCDR(corr, peakIdx, 2)
+        cdrY, cdrX = cls._calculate2DCDR(corr, peakIdx, 3)
         return cls(**{'score': float(corr.max()), 'shift': (peakIdx[0]-zeroShiftIdx[0], peakIdx[1]-zeroShiftIdx[1]), 'cdrY': cdrY, 'cdrX': cdrX})
 
     @staticmethod
     def _calculate2DCDR(corr: np.ndarray, peakIdx: typing.Tuple[int, int], interval: int) -> typing.Tuple[float, float]:
+        corr = corr / corr[peakIdx]  # Normalize so that peak correlation is 1.
         corrY = corr[:, peakIdx[1]]
         cdr1 = (corrY[peakIdx[0]] - corrY[peakIdx[0] + interval]) / interval
         cdr2 = (corrY[peakIdx[0]] - corrY[peakIdx[0] - interval]) / interval
