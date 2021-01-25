@@ -6,6 +6,7 @@ import logging
 import typing
 import numpy as np
 import scipy.signal as sps
+from skimage import measure
 from skimage import metrics
 from time import time
 from scipy.interpolate import interp1d
@@ -91,6 +92,18 @@ class LateralXCorrScore(Score):
         cdr2 = (corrX[peakIdx[1]] - corrX[peakIdx[1] - interval]) / interval
         cdrX = (cdr2 + cdr1) / 2  # Take the average of the cdr in each direction
         return cdrY, cdrX
+
+    @staticmethod
+    def fitCDR(corr: np.ndarray, peakIdx: typing.Tuple[int, int]): #TODO finish this
+        def poly(xidx, yidx, val, angleRads, eccent, majorlinear, minorlinear, majorquadratic, minorquadratic):
+            pass
+
+        threshold = -1.5
+        corr = corr / corr[peakIdx]  # Normalize by peak correlation (corrPeak = 1)
+        corr = np.log10(corr)
+        mask = corr >= threshold  # A mask of pixels with corrrelation (log10) above -1.5
+        labeled = measure.label(mask)
+        mask = labeled == labeled[peakIdx]  # A mask containing only the pixels connected to the peak correlation
 
 
 @dataclasses.dataclass
