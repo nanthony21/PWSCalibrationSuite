@@ -78,6 +78,8 @@ class LateralXCorrScore(Score):
         zeroShiftIdx = (corr.shape[0]//2, corr.shape[1]//2)
         peakIdx = np.unravel_index(corr.argmax(), corr.shape)
         cdrY, cdrX = cls._calculate2DCDR(corr, peakIdx, 3)
+        # plt.imshow(corr, cmap='jet', extent=(-np.floor(corr.shape[0]/2), np.floor(corr.shape[0]/2), -np.floor(corr.shape[1]/2), np.floor(corr.shape[1]/2)))
+        # plt.xlim([-5, 5]); plt.ylim([-5, 5])
         return cls(**{'score': float(corr.max()), 'shift': (peakIdx[0]-zeroShiftIdx[0], peakIdx[1]-zeroShiftIdx[1]), 'cdrY': cdrY, 'cdrX': cdrX})
 
     @staticmethod
