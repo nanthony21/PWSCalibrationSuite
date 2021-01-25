@@ -111,24 +111,22 @@ if __name__ == '__main__':
 
     # Lateral CDR_x
     for expName, g in df.groupby('experiment'):
-        fig, ax = expWindow.subplots(f"Lat CDR_x (normed) {expName}", expSides[expName])
+        fig, ax = expWindow.subplots(f"Lat CDR_x {expName}", expSides[expName])
         g = g.sort_values('idx')
         for scoreName, color in zip(scoreNames, scoreColors):
             scores = g[f"{scoreName}_score"]
             scores = np.array([i.latxcorr.cdrX for i in scores])
-            scores = scores / scores[0] # normalize by first value
             ax.scatter(g.settingQuantity, scores, label=scoreName, color=color)
         plt.xticks(ticks=g.settingQuantity, labels=g.setting, rotation=20)
         drawBlurCBar()
 
     # Lateral CDR_y
     for expName, g in df.groupby('experiment'):
-        fig, ax = expWindow.subplots(f"Lat CDR_y (normed) {expName}", expSides[expName])
+        fig, ax = expWindow.subplots(f"Lat CDR_y {expName}", expSides[expName])
         g = g.sort_values('idx')
         for scoreName, color in zip(scoreNames, scoreColors):
             scores = g[f"{scoreName}_score"]
             scores = np.array([i.latxcorr.cdrY for i in scores])
-            scores = scores / scores[0]  # normalize by first value
             ax.scatter(g.settingQuantity, scores, label=scoreName, color=color)
         plt.xticks(ticks=g.settingQuantity, labels=g.setting, rotation=20)
         drawBlurCBar()
