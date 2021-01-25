@@ -1,16 +1,11 @@
 from PyQt5.QtWidgets import QApplication
-from numpy.core import long
-
 from PWSCalibrationSuite._utility import CVAffineTransform
-from PWSCalibrationSuite.reviewer import Reviewer
 from PWSCalibrationSuite.testScripts import experimentInfo
-import os
+from PWSCalibrationSuite.testScripts.loader import Loader
 import matplotlib.pyplot as plt
-from mpl_qt_viz.visualizers import PlotNd, DockablePlotWindow
+from mpl_qt_viz.visualizers import DockablePlotWindow
 import pandas as pd
 import numpy as np
-
-from PWSCalibrationSuite.testScripts.loader import Loader
 
 
 def loadDataFrame(measurementSet: str) -> pd.DataFrame:
@@ -133,7 +128,19 @@ if __name__ == '__main__':
         for scoreName, color in zip(scoreNames, scoreColors):
             scores = g[f"{scoreName}_score"]
             scores = np.array([i.latxcorr.cdrY for i in scores])
-            scores = scores / scores[0] # normalize by first value
+            scores = scores / scores[0]  # normalize by first value
+            ax.scatter(g.settingQuantity, scores, label=scoreName, color=color)
+        plt.xticks(ticks=g.settingQuantity, labels=g.setting, rotation=20)
+        drawBlurCBar()
+
+    # Lateral CDR ratio (pseudo eccentricity)
+    for expName, g in df.groupby('experiment'):
+        fig, ax = expWindow.subplots(f"Lat CDR Ratio {expName}", expSides[expName])
+        g = g.sort_values('idx')
+        for scoreName, color in zip(scoreNames, scoreColors):
+            scores = g[f"{scoreName}_score"]
+            scores = np.array([i.latxcorr.cdrY/i.latxcorr.cdrX for i in scores])
+            scores = scores / scores[0]  # normalize by first value
             ax.scatter(g.settingQuantity, scores, label=scoreName, color=color)
         plt.xticks(ticks=g.settingQuantity, labels=g.setting, rotation=20)
         drawBlurCBar()
@@ -148,7 +155,6 @@ if __name__ == '__main__':
             ax.scatter(g.settingQuantity, scores, label=scoreName, color=color)
         plt.xticks(ticks=g.settingQuantity, labels=g.setting, rotation=20)
         drawBlurCBar()
-
 
     # Plot AxXCorr Score
     for expName, g in df.groupby('experiment'):

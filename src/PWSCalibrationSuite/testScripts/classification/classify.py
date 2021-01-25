@@ -38,20 +38,7 @@ if __name__ == '__main__':
     print("Starting frame load")
     df = loadDataFrame(measurementSet, scoreName)
     print("Loaded frame")
-    # Split the `CombinedScore` object into numerical columns that will be used as inputs
-    # funcDict = {
-    #     'latXCorr': lambda row: row.score.latxcorr.score,
-    #     'latXCorr_cdr': lambda row: np.sqrt((row.score.latxcorr.cdrY**2 + row.score.latxcorr.cdrX**2)/2),  # RMS of cdrx and cdry. Looking at data by eye this didn't look that useful, I'm inclined to get rid of it.
-    #     'axXCorr': lambda row: row.score.axxcorr.score,
-    #     'axXCorr_cdr': lambda row: row.score.axxcorr.cdr,
-    #     'axXCorr_shift': lambda row: row.score.axxcorr.shift,
-    #     'nrmse': lambda row: row.score.nrmse.score,
-    #     'ssim': lambda row:  row.score.ssim.score,
-    #     'reflectance': lambda row: row.score.reflectance.reflectanceRatio
-    # }
-    # for k, v in funcDict.items():
-    #     df[k] = df.apply(v, axis=1)
-    # inputCols = list(funcDict.keys())
+
     inputs = generateFeatures(df)
     inputCols = inputs.columns
 

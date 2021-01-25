@@ -6,6 +6,7 @@ import logging
 import typing
 import numpy as np
 import scipy.signal as sps
+from skimage import measure
 from skimage import metrics
 from time import time
 from scipy.interpolate import interp1d
@@ -76,13 +77,14 @@ class LateralXCorrScore(Score):
         corr = sps.correlate(tempData, testData, mode='full')  # Using 'full' here instead of 'same' means that we can reliably know the index of the zero-shift element of the output
         zeroShiftIdx = (corr.shape[0]//2, corr.shape[1]//2)
         peakIdx = np.unravel_index(corr.argmax(), corr.shape)
-        cdrY, cdrX = cls._calculate2DCDR(corr, peakIdx, 2)
+        cdrY, cdrX = cls._calculate2DCDR(corr, peakIdx, 3)
         # plt.imshow(corr, cmap='jet', extent=(-np.floor(corr.shape[0]/2), np.floor(corr.shape[0]/2), -np.floor(corr.shape[1]/2), np.floor(corr.shape[1]/2)))
         # plt.xlim([-5, 5]); plt.ylim([-5, 5])
         return cls(**{'score': float(corr.max()), 'shift': (peakIdx[0]-zeroShiftIdx[0], peakIdx[1]-zeroShiftIdx[1]), 'cdrY': cdrY, 'cdrX': cdrX})
 
     @staticmethod
     def _calculate2DCDR(corr: np.ndarray, peakIdx: typing.Tuple[int, int], interval: int) -> typing.Tuple[float, float]:
+        corr = corr / corr[peakIdx]  # Normalize so that peak correlation is 1.
         corrY = corr[:, peakIdx[1]]
         cdr1 = (corrY[peakIdx[0]] - corrY[peakIdx[0] + interval]) / interval
         cdr2 = (corrY[peakIdx[0]] - corrY[peakIdx[0] - interval]) / interval
@@ -93,6 +95,18 @@ class LateralXCorrScore(Score):
         cdr2 = (corrX[peakIdx[1]] - corrX[peakIdx[1] - interval]) / interval
         cdrX = (cdr2 + cdr1) / 2  # Take the average of the cdr in each direction
         return cdrY, cdrX
+
+    @staticmethod
+    def fitCDR(corr: np.ndarray, peakIdx: typing.Tuple[int, int]): #TODO finish this
+        def poly(xidx, yidx, val, angleRads, eccent, majorlinear, minorlinear, majorquadratic, minorquadratic):
+            pass
+
+        threshold = -1.5
+        corr = corr / corr[peakIdx]  # Normalize by peak correlation (corrPeak = 1)
+        corr = np.log10(corr)
+        mask = corr >= threshold  # A mask of pixels with corrrelation (log10) above -1.5
+        labeled = measure.label(mask)
+        mask = labeled == labeled[peakIdx]  # A mask containing only the pixels connected to the peak correlation
 
 
 @dataclasses.dataclass
