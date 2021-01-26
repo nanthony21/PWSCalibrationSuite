@@ -82,6 +82,7 @@ def loadCellData(fromCache: bool = True):
     df = pd.DataFrame(l)
     # detect ROIS that are of different size than their counterparts.
     deltaSize = df.groupby('cellNum').apply(lambda group: group['roiSize'] - group['roiSize'].value_counts().idxmax())  # Subtract the most common roiSize value from the roiSize values
+    deltaSize.index = deltaSize.index.get_level_values(1)  # Restore the main index
     df['roiClipped'] = deltaSize.abs() > 5
     df.to_hdf(cachePath, mode='w', key='data')
     return df
