@@ -45,7 +45,7 @@ if __name__ == '__main__':
     df2 = df.loc[:, ['experiment', 'setting', 'cellNum', 'roiNum', 'rms', 'reflectance']]
     df2['condition'] = df2.apply(lambda row: f"{row['experiment']}.{row['setting']}", axis=1)
     ref = df2[(df2['experiment'] == 'centered') & (df2['setting'] == '0_52')].set_index(['cellNum', 'roiNum'])
-    for param in['rms', 'reflectance']:
+    for param in ['rms', 'reflectance']:
         pChange = df2.groupby(['cellNum', 'roiNum']).apply(lambda g: 100 * (g[param] - ref.loc[g.name][param]) / ref.loc[g.name][param])
         pChange.index = pChange.index.get_level_values(-1)
         newName = f'pChange_{param}'
@@ -58,7 +58,9 @@ if __name__ == '__main__':
             ax = axs[i]
             sns.boxplot(data=g, x='setting', y=newName, ax=ax)
             ax.set(ylabel=None, xlabel=expName)
-        plt.tight_layout()
+            ax.grid(axis='y')
+        # plt.tight_layout()
+        plt.subplots_adjust(wspace=0)
 
 
 
