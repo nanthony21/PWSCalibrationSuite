@@ -7,13 +7,14 @@ import numpy as np
 import pwspy.dataTypes as pwsdt
 from glob import glob
 from pwspy.analysis.compilation import PWSRoiCompiler, PWSCompilerSettings, GenericCompilerSettings, GenericRoiCompiler
-
+import logging
 
 def loadDataFrame(measurementSet: str, scoreName: str, fromCache: bool = True) -> pd.DataFrame:
     loader = Loader(experimentInfo.workingDirectory, measurementSet, readOnly=True)
     results = []
     for i in loader.measurements:
         try:
+            logging.getLogger(__name__).info(f"Load transformed data {i.name}")
             result = i.loadTransformedData(loader.template.idTag)
         except OSError:
             result = None  # Calibration must have failed. wasn't saved.
@@ -34,7 +35,9 @@ def loadDataFrame(measurementSet: str, scoreName: str, fromCache: bool = True) -
     df['setting'] = df.apply(lambda row: '_'.join(row['measurementName'].split('_')[1:]), axis=1)
     del df['measurementName']
     df = pd.merge(df, experimentInfo.experiment, on=('experiment', 'setting'))
+    logging.getLogger(__name__).info(f"Start loading cell data DataFrame")
     cellDf = loadCellData(fromCache)
+    logging.getLogger(__name__).info(f"Finished loading cell data DataFrame")
     df = pd.merge(df, cellDf, on=('experiment', 'setting'))
     return df
 
