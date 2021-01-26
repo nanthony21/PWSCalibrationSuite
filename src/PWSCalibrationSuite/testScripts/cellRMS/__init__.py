@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import pwspy.dataTypes as pwsdt
 from glob import glob
-from pwspy.analysis.compilation import PWSRoiCompiler, PWSCompilerSettings
+from pwspy.analysis.compilation import PWSRoiCompiler, PWSCompilerSettings, GenericCompilerSettings, GenericRoiCompiler
 
 
 def loadDataFrame(measurementSet: str, scoreName: str, fromCache: bool = True) -> pd.DataFrame:
@@ -45,8 +45,11 @@ def loadCellData(fromCache: bool = True):
         return pd.read_hdf(cachePath, key='data')
     l = []
     anName = 'script'
-    compiler = PWSRoiCompiler(
+    pwsCompiler = PWSRoiCompiler(
         PWSCompilerSettings(reflectance=True, rms=True)
+    )
+    genCompiler = GenericRoiCompiler(
+        GenericCompilerSettings(roiArea=True)
     )
     for i, row in experimentInfo.experiment.iterrows():
         exp = row['experiment']
@@ -61,17 +64,22 @@ def loadCellData(fromCache: bool = True):
                 continue
             for roiName, roiNum, fformat in acq.getRois():
                 roi = acq.loadRoi(roiName, roiNum, fformat)
-                compResults, warnings = compiler.run(anls, roi)
+                compResults, warnings = pwsCompiler.run(anls, roi)
+                roiResults = genCompiler.run(roi)
                 [print(warn.longMsg) for warn in warnings]
                 l.append({
                     'experiment': exp,
                     'setting': setting,
-                    'roiNum': roiNum,  # All names are NUC so no need to store this.
+                    'cellNum': acq.getNumber(),
+                    'roiNum': roiNum,  # All names are NUC so no need to store that.
                     'rms': compResults.rms,
-                    'reflectance': compResults.reflectance
+                    'reflectance': compResults.reflectance,
+                    'roiSize': roiResults.roiArea
                     })
     df = pd.DataFrame(l)
-    # TODO detect ROIS that are of different size than their counterparts.
+    # detect ROIS that are of different size than their counterparts.
+    deltaSize = df.groupby('cellNum').apply(lambda group: group['roiSize'] - group['roiSize'].value_counts().idxmax())  # Subtract the most common roiSize value from the roiSize values
+    df['roiClipped'] = deltaSize.abs() > 5
     df.to_hdf(cachePath, mode='w', key='data')
     return df
 
