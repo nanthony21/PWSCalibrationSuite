@@ -39,15 +39,6 @@ if __name__ == '__main__':
     plt.figure()
     sns.pairplot(normFeats)  # Nice view of correlations
 
-    # Replaced by below
-    # fig, ax = plt.subplots()
-    # fig.suptitle("Normalized Feature Covariance")
-    # plt.imshow(pca.get_covariance(), clim=(-1, 1), cmap='bwr')
-    # plt.colorbar()
-    # tickLabels = ['trash'] + list(inputCols)  # I'm not sure why, but this is necessary.
-    # ax.set_xticklabels(tickLabels)
-    # ax.set_yticklabels(tickLabels)
-    # plt.xticks(rotation=30)
 
 
     plt.figure()
