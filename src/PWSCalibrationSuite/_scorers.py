@@ -12,8 +12,6 @@ from time import time
 from scipy.interpolate import interp1d
 from ._utility import DualCubeSplitter
 
-#TODO devise a way to inject a cube splitter into a scorer for more efficient high granularity scoring
-
 
 @dataclasses.dataclass
 class Score(abc.ABC):

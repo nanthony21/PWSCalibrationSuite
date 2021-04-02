@@ -4,6 +4,7 @@ Instead of decision trees can we just use a euclidean distance between feature v
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 
 def make_spider(pandasRow: pd.Series, title: str, color: str, rMax: float = None):
@@ -45,6 +46,10 @@ def make_spider(pandasRow: pd.Series, title: str, color: str, rMax: float = None
 
 if __name__ == '__main__':
     from PWSCalibrationSuite.testScripts.classification import generateFeatures, loadDataFrame
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    plt.ion()
 
     measurementSet = 'xcorr_blurScan_4'
     scoreName = '2'
@@ -57,11 +62,29 @@ if __name__ == '__main__':
 
     df = pd.merge(df, inputs, right_index=True, left_index=True)
 
-    avgRefCoord = df[df['isref']][inputCols].mean()
+    scaler = StandardScaler()
+    scaler.fit(df[inputCols][df['isref']])
+    df[inputCols] = (scaler.transform(df[inputCols]))/100 + 1  # the 100 is totally arbitrary here
+    print(scaler.scale_, scaler.mean_)
+
+    avgRefCoord = np.ones((len(inputCols),))#df[df['isref']][inputCols].mean()
+    df['distance'] = df.apply(lambda row: np.sqrt(((avgRefCoord - row[inputCols])**2).sum()), axis=1)
 
     for i, row in df.iterrows():
         color = 'blue' if row['isref'] else 'red'
-        euclideanDistance = np.sqrt(((avgRefCoord - row[inputCols])**2).sum())
-        title = f"{row['experiment']}, {row['setting']}, Distance: {euclideanDistance:.2f}"
+        # euclideanDistance = np.sqrt(((avgRefCoord - row[inputCols])**2).sum())
+        title = f"{row['experiment']}, {row['setting']}, Distance: {row['distance']:.2f}"
         make_spider(row[inputCols].abs(), title=title, color=color, rMax=1.6)  # We do absolute value here since the axial shift can be negative which messes up the plots. The scaling of values needs to be changed before this is done.
+
+    df['(Experiment / Setting)'] = df.apply(lambda row: (row['experiment'], row['setting']), axis=1)
+    df = df.sort_values('isref', ascending=False)
+    plt.figure()
+    ax: plt.Axes = sns.barplot(data=df, x="(Experiment / Setting)", y='distance')
+
+    for p, (i, row) in zip(ax.patches, df.iterrows()):  # Mark the references as green
+        if row['isref']:
+            p.set_color('green')
+    plt.xticks(rotation=20)
+
+
     a = 1
