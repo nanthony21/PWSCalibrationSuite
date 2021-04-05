@@ -30,6 +30,8 @@ if __name__ == '__main__':
     #     ax.set_xlabel(c1)
     #     ax.set_ylabel(c2)
 
+
+
     #Plot normalized correlations
     normFeats = (feats - feats.mean(axis=0)) / feats.std(axis=0)  # Note: the sklearn.StandardScaler uses a biased stdDev so doesn't work well for getting correlations of 1.
     pca = PCA(svd_solver='full')
@@ -62,3 +64,4 @@ if __name__ == '__main__':
 
 
     a = 1
+

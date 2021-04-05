@@ -67,6 +67,7 @@ if __name__ == '__main__':
     df[inputCols] = (scaler.transform(df[inputCols]))/100 + 1  # the 100 is totally arbitrary here
     print(scaler.scale_, scaler.mean_)
 
+
     avgRefCoord = np.ones((len(inputCols),))#df[df['isref']][inputCols].mean()
     df['distance'] = df.apply(lambda row: np.sqrt(((avgRefCoord - row[inputCols])**2).sum()), axis=1)
 

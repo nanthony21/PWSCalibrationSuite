@@ -9,6 +9,7 @@ from glob import glob
 from pwspy.analysis.compilation import PWSRoiCompiler, PWSCompilerSettings, GenericCompilerSettings, GenericRoiCompiler
 import logging
 
+
 def loadDataFrame(measurementSet: str, scoreName: str, fromCache: bool = True) -> pd.DataFrame:
     loader = Loader(experimentInfo.workingDirectory, measurementSet, readOnly=True)
     results = []
