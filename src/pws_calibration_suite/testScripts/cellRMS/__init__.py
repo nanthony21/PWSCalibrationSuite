@@ -1,7 +1,7 @@
 import os
 
-from PWSCalibrationSuite.testScripts import experimentInfo
-from PWSCalibrationSuite.testScripts.loader import Loader
+from pws_calibration_suite.testScripts import experimentInfo
+from pws_calibration_suite.testScripts.loader import Loader
 import pandas as pd
 import numpy as np
 import pwspy.dataTypes as pwsdt

@@ -9,7 +9,7 @@ import h5py
 import numpy as np
 from pwspy import dateTimeFormat
 from pwspy.analysis import AbstractHDFAnalysisResults
-from PWSCalibrationSuite._scorers import Score, CombinedScore
+from pws_calibration_suite._comparison._scorers import Score, CombinedScore
 
 
 class TransformedData(AbstractHDFAnalysisResults):

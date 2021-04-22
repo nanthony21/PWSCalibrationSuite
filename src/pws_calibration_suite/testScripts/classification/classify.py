@@ -3,7 +3,7 @@ import graphviz
 import matplotlib.pyplot as plt
 import os
 
-from PWSCalibrationSuite.testScripts.classification import loadDataFrame, generateFeatures
+from pws_calibration_suite.testScripts.classification import loadDataFrame, generateFeatures
 
 
 def viewTree(decTree, featNames, classNames, title='temp'):

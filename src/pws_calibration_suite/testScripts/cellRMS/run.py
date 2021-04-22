@@ -1,6 +1,6 @@
 import logging
 import sys
-from PWSCalibrationSuite.testScripts.cellRMS import loadDataFrame
+from pws_calibration_suite.testScripts.cellRMS import loadDataFrame
 
 
 def configureLogger():

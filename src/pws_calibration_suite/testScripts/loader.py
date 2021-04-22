@@ -1,5 +1,5 @@
-from PWSCalibrationSuite.ITOMeasurement import ITOMeasurement
-from PWSCalibrationSuite.loaders import AbstractMeasurementLoader
+from pws_calibration_suite._comparison.ITOMeasurement import ITOMeasurement
+from pws_calibration_suite._comparison.loaders import AbstractMeasurementLoader
 import typing
 import pwspy.analysis.pws as pwsAnalysis
 import os

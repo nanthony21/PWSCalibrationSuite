@@ -1,7 +1,7 @@
 
-from PWSCalibrationSuite.testScripts import experimentInfo
-from PWSCalibrationSuite.testScripts.classification import generateFeatures, loadDataFrame
-from PWSCalibrationSuite.testScripts.loader import Loader
+from pws_calibration_suite.testScripts import experimentInfo
+from pws_calibration_suite.testScripts.classification import generateFeatures, loadDataFrame
+from pws_calibration_suite.testScripts.loader import Loader
 import numpy as np
 import pandas as pd
 import os

@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication
-from PWSCalibrationSuite._utility import CVAffineTransform
-from PWSCalibrationSuite.testScripts import experimentInfo
-from PWSCalibrationSuite.testScripts.loader import Loader
+from pws_calibration_suite._comparison._utility import CVAffineTransform
+from pws_calibration_suite.testScripts import experimentInfo
+from pws_calibration_suite.testScripts.loader import Loader
 import matplotlib.pyplot as plt
 from mpl_qt_viz.visualizers import DockablePlotWindow
 import pandas as pd
@@ -50,7 +50,7 @@ def loadDataFrame(measurementSet: str) -> pd.DataFrame:
 if __name__ == '__main__':
     import matplotlib as mpl
 
-    measurementSet = 'xcorr_blurScan_4'
+    measurementSet = 'xcorr_cdr_sift_test'
 
     df = loadDataFrame(measurementSet)
     print("Loaded Dataframe")

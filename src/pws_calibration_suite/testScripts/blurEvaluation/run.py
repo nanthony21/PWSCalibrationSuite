@@ -4,9 +4,9 @@ Created on Thu Dec 10 17:08:42 2020
 
 @author: backman05
 """
-from PWSCalibrationSuite.TransformGenerator import TransformGenerator
-from PWSCalibrationSuite.analyzer import Analyzer, TransformedDataSaver, TransformedDataScorer
-from PWSCalibrationSuite.testScripts.loader import Loader
+from pws_calibration_suite._comparison.TransformGenerator import TransformGenerator
+from pws_calibration_suite._comparison.analyzer import Analyzer, TransformedDataSaver, TransformedDataScorer
+from pws_calibration_suite.testScripts.loader import Loader
 from importlib import reload
 import logging
 reload(logging)  # This prevents the sys.stdout handler from being added mlutiple times when we re-run the script in spyder.
@@ -26,7 +26,7 @@ def configureLogger():
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    from PWSCalibrationSuite.testScripts import experimentInfo
+    from pws_calibration_suite.testScripts import experimentInfo
     plt.ion()
     logger = configureLogger()
     measurementSet = 'xcorr_test'

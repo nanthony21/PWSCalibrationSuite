@@ -45,7 +45,7 @@ def make_spider(pandasRow: pd.Series, title: str, color: str, rMax: float = None
 
 
 if __name__ == '__main__':
-    from PWSCalibrationSuite.testScripts.classification import generateFeatures, loadDataFrame
+    from pws_calibration_suite.testScripts.classification import generateFeatures, loadDataFrame
     import matplotlib.pyplot as plt
     import seaborn as sns
 
