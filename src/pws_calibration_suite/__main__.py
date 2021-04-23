@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import QApplication
 import qdarkstyle
 
+from pws_calibration_suite._javaGate import MMGate
 from pws_calibration_suite._ui import MainWindow
 
 
@@ -22,8 +23,13 @@ class App(QApplication):
     def __init__(self):
         super().__init__([])
         self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5'))
-        self._window = MainWindow()
+        self._mmGate = MMGate()
+        self._window = MainWindow(self._mmGate)
         self._window.show()
+        self.aboutToQuit.connect(self.close)
+
+    def close(self):
+        self._mmGate.close()
 
 def main():
     plt.ion()
