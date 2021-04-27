@@ -18,7 +18,7 @@ class MMGate:
             raise ValueError("Already connected to PWS Micro-Manager")
         installPath = pl.PurePath(installDir)
         os.chdir(installPath)  # If we don't do this then the plugins won't be found by micro-manager.
-        self._mmProc = subprocess.Popen(str(installPath / 'imagej.exe'))
+        self._mmProc = subprocess.Popen(str(installPath / 'imagej.exe'), stdout=subprocess.PIPE, shell=True)
 
     def connect(self, timeout: float = 20):
         if self._connected:
@@ -46,7 +46,7 @@ class MMGate:
 
     def close(self):
         # disconnect
-        self._mmProc.terminate() # This doesn't work and neither does kill
+        pass
 
 if __name__ == '__main__':
 

@@ -1,3 +1,5 @@
+import random
+
 from pws_calibration_suite._comparison.analyzer import Analyzer
 from pws_calibration_suite._comparison.loaders import DateMeasurementLoader
 from pws_calibration_suite._comparison.reviewer import Reviewer
@@ -22,7 +24,8 @@ def configureLogger():
 class App(QApplication):
     def __init__(self):
         super().__init__([])
-        self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5'))
+        style = random.choice([qdarkstyle.dark.palette.DarkPalette, qdarkstyle.light.palette.LightPalette])
+        self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=style))
         self._mmGate = MMGate()
         self._window = MainWindow(self._mmGate)
         self._window.show()
