@@ -13,6 +13,9 @@ class MMGate:
         self._gw = self.mm = self.pws = None
         self._connected = False
 
+    def isConnected(self) -> bool:
+        return self._connected
+
     def openMM(self, installDir: str):
         if self._connected:
             raise ValueError("Already connected to PWS Micro-Manager")

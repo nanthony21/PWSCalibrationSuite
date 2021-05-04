@@ -263,7 +263,7 @@ class SplitScore(Score):
         return cls(score=out)
 
 if __name__ == '__main__':
-    from pws_calibration_suite._comparison.ITOMeasurement import ITOMeasurement
+    from pws_calibration_suite.comparison.ITOMeasurement import ITOMeasurement
     import os
     from pwspy.analysis.pws import PWSAnalysisSettings
     from pwspy.utility.reflection import Material

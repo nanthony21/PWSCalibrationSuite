@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication
-from pws_calibration_suite._comparison._utility import CVAffineTransform
+from pws_calibration_suite.comparison._utility import CVAffineTransform
 from pws_calibration_suite.testScripts import experimentInfo
 from pws_calibration_suite.testScripts.loader import Loader
 import matplotlib.pyplot as plt

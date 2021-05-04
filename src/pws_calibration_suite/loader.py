@@ -1,8 +1,7 @@
-from pws_calibration_suite.comparison.ITOMeasurement import ITOMeasurement
-from pws_calibration_suite.comparison.loaders import AbstractMeasurementLoader
-import typing
-import pwspy.analysis.pws as pwsAnalysis
 import os
+import typing
+from pws_calibration_suite.comparison import ITOMeasurement, AbstractMeasurementLoader
+import pwspy.analysis.pws as pwsAnalysis
 import pwspy.dataTypes as pwsdt
 
 

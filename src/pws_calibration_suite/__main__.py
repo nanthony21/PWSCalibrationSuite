@@ -1,8 +1,8 @@
 import random
 
-from pws_calibration_suite._comparison.analyzer import Analyzer
-from pws_calibration_suite._comparison.loaders import DateMeasurementLoader
-from pws_calibration_suite._comparison.reviewer import Reviewer
+from pws_calibration_suite.comparison.analyzer import Analyzer
+from pws_calibration_suite.comparison.loaders import DateMeasurementLoader
+from pws_calibration_suite.comparison.reviewer import Reviewer
 import os
 import logging
 import sys
@@ -27,6 +27,10 @@ class App(QApplication):
         style = random.choice([qdarkstyle.dark.palette.DarkPalette, qdarkstyle.light.palette.LightPalette])
         self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=style))
         self._mmGate = MMGate()
+        try:
+            self._mmGate.connect(timeout=.05)  # Try connecting immediately in case an instanse is already running.
+        except:
+            pass
         self._window = MainWindow(self._mmGate)
         self._window.show()
         self.aboutToQuit.connect(self.close)

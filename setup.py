@@ -42,6 +42,6 @@ setup(name='pws_calibration_suite',
                         'qdarkstyle'
                         ],
       package_dir={'': 'src'},
-      package_data={'pws_calibration_suite': []},
+      package_data={'pws_calibration_suite': ['_resources/*']},
       packages=find_packages('src')
 	)

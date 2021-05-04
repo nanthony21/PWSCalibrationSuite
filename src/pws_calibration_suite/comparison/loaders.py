@@ -5,7 +5,7 @@ import typing
 from glob import glob
 import pwspy.dataTypes as pwsdt
 from pwspy.analysis import pws as pwsAnalysis
-from pws_calibration_suite._comparison.ITOMeasurement import ITOMeasurement
+from pws_calibration_suite.comparison import ITOMeasurement
 
 settings = pwsAnalysis.PWSAnalysisSettings.loadDefaultSettings("Recommended")
 

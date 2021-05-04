@@ -4,8 +4,8 @@ Created on Thu Dec 10 17:08:42 2020
 
 @author: backman05
 """
-from pws_calibration_suite._comparison.TransformGenerator import TransformGenerator
-from pws_calibration_suite._comparison.analyzer import Analyzer, TransformedDataSaver, TransformedDataScorer
+from pws_calibration_suite.comparison.TransformGenerator import TransformGenerator
+from pws_calibration_suite.comparison.analyzer import Analyzer, TransformedDataSaver, TransformedDataScorer
 from pws_calibration_suite.testScripts.loader import Loader
 from importlib import reload
 import logging

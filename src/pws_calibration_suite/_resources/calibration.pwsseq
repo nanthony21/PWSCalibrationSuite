@@ -1,0 +1,210 @@
+{
+  "id": 14,
+  "stepType": "ROOT",
+  "settings": {
+    "type": "RootStepSettings",
+    "directory": "C:\\Users\\nicke\\Desktop\\ttt",
+    "author": "PWSCalibrationSuite",
+    "project": "5 sample calibration plate",
+    "cellLine": "No Cells",
+    "description": "TODO"
+  },
+  "children": [
+    {
+      "id": 24,
+      "stepType": "PAUSE",
+      "settings": {
+        "type": "PauseStepSettings",
+        "message": "Paused1"
+      }
+    },
+    {
+      "id": 18,
+      "stepType": "POS",
+      "settings": {
+        "type": "AcquirePositionsSettings",
+        "posList": {
+          "positions": [
+            {
+              "label": "Pos0",
+              "defaultZStage": "Z",
+              "defaultXYStage": "XY",
+              "gridRow": 0,
+              "gridCol": 0,
+              "stagePositions": [
+                {
+                  "numAxes": 1,
+                  "z": 0.0,
+                  "stageName": "Z"
+                },
+                {
+                  "numAxes": 2,
+                  "x": -0.0,
+                  "y": -0.0,
+                  "stageName": "XY"
+                }
+              ]
+            },
+            {
+              "label": "Pos1",
+              "defaultZStage": "Z",
+              "defaultXYStage": "XY",
+              "gridRow": 0,
+              "gridCol": 0,
+              "stagePositions": [
+                {
+                  "numAxes": 1,
+                  "z": 0.0,
+                  "stageName": "Z"
+                },
+                {
+                  "numAxes": 2,
+                  "x": -0.0,
+                  "y": -0.0,
+                  "stageName": "XY"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "children": [
+        {
+          "id": 19,
+          "stepType": "ACQ",
+          "settings": {
+            "type": "AcquireCellSettings",
+            "pwsEnabled": true,
+            "pwsSettings": {
+              "type": "PWSSettings",
+              "imConfigName": "Spectral",
+              "wvStart": 500,
+              "wvStop": 700,
+              "wvStep": 2,
+              "exposure": 50.0,
+              "ttlTriggering": false,
+              "externalCamTriggering": false
+            },
+            "dynEnabled": false,
+            "dynSettings": {
+              "type": "DynSettings",
+              "imConfigName": "Spectral",
+              "exposure": 50.0,
+              "wavelength": 550,
+              "numFrames": 200
+            },
+            "fluorEnabled": false,
+            "fluorSettings": [
+              {
+                "type": "FluorSettings",
+                "imConfigName": "Spectral",
+                "exposure": 1000.0,
+                "filterConfigName": null,
+                "tfWavelength": 550,
+                "focusOffset": 0.0
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "stepType": "PAUSE",
+      "settings": {
+        "type": "PauseStepSettings",
+        "message": "Paused2"
+      }
+    },
+    {
+      "id": 21,
+      "stepType": "POS",
+      "settings": {
+        "type": "AcquirePositionsSettings",
+        "posList": {
+          "positions": [
+            {
+              "label": "Pos0",
+              "defaultZStage": "Z",
+              "defaultXYStage": "XY",
+              "gridRow": 0,
+              "gridCol": 0,
+              "stagePositions": [
+                {
+                  "numAxes": 1,
+                  "z": 0.0,
+                  "stageName": "Z"
+                },
+                {
+                  "numAxes": 2,
+                  "x": -0.0,
+                  "y": -0.0,
+                  "stageName": "XY"
+                }
+              ]
+            },
+            {
+              "label": "Pos1",
+              "defaultZStage": "Z",
+              "defaultXYStage": "XY",
+              "gridRow": 0,
+              "gridCol": 0,
+              "stagePositions": [
+                {
+                  "numAxes": 1,
+                  "z": 0.0,
+                  "stageName": "Z"
+                },
+                {
+                  "numAxes": 2,
+                  "x": -0.0,
+                  "y": -0.0,
+                  "stageName": "XY"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "children": [
+        {
+          "id": 22,
+          "stepType": "ACQ",
+          "settings": {
+            "type": "AcquireCellSettings",
+            "pwsEnabled": true,
+            "pwsSettings": {
+              "type": "PWSSettings",
+              "imConfigName": "Spectral",
+              "wvStart": 500,
+              "wvStop": 700,
+              "wvStep": 2,
+              "exposure": 100.0,
+              "ttlTriggering": false,
+              "externalCamTriggering": false
+            },
+            "dynEnabled": false,
+            "dynSettings": {
+              "type": "DynSettings",
+              "imConfigName": "Spectral",
+              "exposure": 50.0,
+              "wavelength": 550,
+              "numFrames": 200
+            },
+            "fluorEnabled": false,
+            "fluorSettings": [
+              {
+                "type": "FluorSettings",
+                "imConfigName": "Spectral",
+                "exposure": 1000.0,
+                "filterConfigName": null,
+                "tfWavelength": 550,
+                "focusOffset": 0.0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
