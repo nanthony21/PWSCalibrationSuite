@@ -17,25 +17,20 @@ class ITOMeasurement(AnalysisManager):
     as well as an acquisition of a reference image of a glass-water interface which is used for normalization.
 
     Args:
-
+        homeDir: The folder where the analysis and calibration files will be cached to.
+        itoAcq: The PWS acquisition of the ITO thin film calibration standard.
+        refAcq: The reference PWS acquisition that will be used for data normalization during PWS analysis.
+        settings: The settings object that will be passed to the PWS analysis.
+        name: The name to associate with this measurement.
+        readOnly: If True and the home directory or initial analysis file does not yet exist an exception will be thrown.
+            This is useful to prevent new analysis files from being accidently created just due to a programming
+            error or misnaming of a file path.
     """
 
     ANALYSIS_NAME = 'ITOCalibration'
 
     def __init__(self, homeDir: str, itoAcq: pwsdt.AcqDir, refAcq: pwsdt.AcqDir,
                  settings: pwsAnalysis.PWSAnalysisSettings, name: str, readOnly: bool = False):
-        """
-
-        Args:
-            homeDir: The folder where the analysis and calibration files will be cached to.
-            itoAcq: The PWS acquisition of the ITO thin film calibration standard.
-            refAcq: The reference PWS acquisition that will be used for data normalization during PWS analysis.
-            settings: The settings object that will be passed to the PWS analysis.
-            name: The name to associate with this measurement.
-            readOnly: If True and the home directory or initial analysis file does not yet exist an exception will be thrown.
-                This is useful to prevent new analysis files from being accidently created just due to a programming
-                error or misnaming of a file path.
-        """
         super().__init__(homeDir)
         self.filePath = os.path.abspath(homeDir)
         self.name = name

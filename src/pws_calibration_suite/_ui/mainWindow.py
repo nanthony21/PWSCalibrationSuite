@@ -11,7 +11,6 @@ from pws_calibration_suite.comparison.analyzer import Analyzer
 from pws_calibration_suite._javaGate import MMGate
 import pathlib as pl
 
-from pws_calibration_suite.loader import Loader
 
 
 class MainWindow(QMainWindow):

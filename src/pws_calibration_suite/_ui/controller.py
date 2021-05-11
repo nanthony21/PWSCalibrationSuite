@@ -1,10 +1,14 @@
 import logging
 import os
+import shutil
 import time
 from typing import Callable
 import numpy as np
 import pwspy
 from pws_calibration_suite._javaGate import MMGate
+from pws_calibration_suite.comparison.analyzer import Analyzer
+from pws_calibration_suite.loader import DefaultLoader
+import pathlib as pl
 
 class Controller:
     def __init__(self, gate: MMGate):
@@ -14,20 +18,22 @@ class Controller:
     def getGate(self) -> MMGate:
         return self._mmGate
 
-    def acquire(self, path: os.PathLike):
+    def acquire(self, path: pl.Path):
         from pws_calibration_suite import calibrationSequenceFile
         sequencerapi = self._mmGate.pws.sequencer()
         sequencerapi.loadSequence(str(calibrationSequenceFile))
+        if path.exists():
+            shutil.rmtree(path)
+        path.mkdir()
         sequencerapi.setSavePath(str(path))
         sequencerapi.runSequence()
         time.sleep(1)  # TODO It takes a while for `isSequenceRunning` to return flse, must pause a little.
         while sequencerapi.isSequenceRunning():
             time.sleep(1)
-        seq, acqs = pwspy.utility.acquisition.loadDirectory(str(path))
-        ito, reflectance, glass, scatter = acqs
 
-        # loader = Loader()
-        # Analyzer(loader, blurSigma=7)
+        loader = DefaultLoader(path)
+        an = Analyzer(loader, blurSigma=7)
+        a = 1
 
     def snap(self):
         im = self._mmGate.mm.live().snap(False)[0]
