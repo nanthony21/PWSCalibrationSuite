@@ -39,7 +39,7 @@ class App(QApplication):
         self._mmGate.close()
 
 def main():
-    plt.ion()
+    # plt.ion()
 
     directory = r'\\BackmanLabNAS\home\Year3\ITOPositionStability\AppTest'
 

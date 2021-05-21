@@ -10,6 +10,7 @@ from pws_calibration_suite.comparison.analyzer import Analyzer
 from pws_calibration_suite.loader import DefaultLoader
 import pathlib as pl
 
+
 class Controller:
     def __init__(self, gate: MMGate):
         self._mmGate = gate
@@ -18,7 +19,7 @@ class Controller:
     def getGate(self) -> MMGate:
         return self._mmGate
 
-    def acquire(self, path: pl.Path):
+    def acquire(self, path: pl.Path) -> DefaultLoader:
         from pws_calibration_suite import calibrationSequenceFile
         sequencerapi = self._mmGate.pws.sequencer()
         sequencerapi.loadSequence(str(calibrationSequenceFile))
@@ -28,11 +29,10 @@ class Controller:
         sequencerapi.setSavePath(str(path))
         sequencerapi.runSequence()
         while sequencerapi.isSequenceRunning():
-            time.sleep(1)
+            time.sleep(.5)
 
         loader = DefaultLoader(path)
-        an = Analyzer(loader, blurSigma=3)
-        a = 1
+        return loader
 
     def snap(self):
         im = self._mmGate.mm.live().snap(False)[0]

@@ -1,17 +1,16 @@
 import logging
-
+import pandas as pd
 from PyQt5 import QtCore, QtGui
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QDockWidget, QMessageBox
-import os
-import pwspy.utility.acquisition
-import time
-
 from pws_calibration_suite._ui.controller import Controller
-from pws_calibration_suite.comparison.analyzer import Analyzer
 from pws_calibration_suite._javaGate import MMGate
 import pathlib as pl
-
+from pws_calibration_suite import targetIconPath
+from pws_calibration_suite._ui.scorevisualizer import ScoreVisualizer
+from pws_calibration_suite.comparison.analyzer import Analyzer
+from pws_calibration_suite.scoring import generateFeatures
 
 
 class MainWindow(QMainWindow):
@@ -22,15 +21,19 @@ class MainWindow(QMainWindow):
 
         self._controller = Controller(mmGate)
         leftWidget = QDockWidget(parent=self)
+        self._acquireWidg = AcquireWidget(self._controller, parent=leftWidget)
+
         leftWidget.setTitleBarWidget(QWidget())  # Get rid of the title bar
         leftWidget.setFeatures(QDockWidget.NoDockWidgetFeatures)
-        leftWidget.setWidget(AcquireWidget(self._controller, parent=leftWidget))
+        leftWidget.setWidget(self._acquireWidg)
 
-        centralWidget = QWidget(self)
-        self.setCentralWidget(centralWidget)
+        self._visualizerWidg = ScoreVisualizer(self)
+        self.setCentralWidget(self._visualizerWidg)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, leftWidget)
 
         self.resize(1024, 768)
+
+        self._acquireWidg.newDataAcquired.connect(self._visualizerWidg.setData)
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         self._controller.getGate().close()
@@ -39,6 +42,8 @@ class MainWindow(QMainWindow):
 
 
 class AcquireWidget(QWidget):
+    newDataAcquired = pyqtSignal(pd.DataFrame)
+
     def __init__(self, controller: Controller, parent: QWidget = None):
         super().__init__(parent=parent)
         self._controller = controller
@@ -87,9 +92,15 @@ class AcquireWidget(QWidget):
         else:
             pass
 
-    def acquire(self):
+    def acquire(self) -> pd.DataFrame:
         path = pl.Path.home() / 'testingAcquisition'
         if not path.exists():
             path.mkdir()
-        self._controller.acquire(path)
+        loader = self._controller.acquire(path)
+        an = Analyzer(loader, blurSigma=3)
+        # Convert the score object to an dataframe of values
+        df = generateFeatures(an.output)
+        self.newDataAcquired.emit(df)
+        return an.output
+
 

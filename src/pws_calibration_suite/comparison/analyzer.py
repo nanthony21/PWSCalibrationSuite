@@ -40,7 +40,7 @@ def _blur3dDataLaterally(data: np.ndarray, sigma: float) -> np.ndarray:
     return newData
 
 
-def _score(measurement: ITOMeasurement, scoreName: str, blurSigma: float, templateIdTag: str, templateArr: np.ndarray, lock: mp.Lock = None):
+def _score(measurement: ITOMeasurement, scoreName: str, blurSigma: float, templateIdTag: str, templateArr: np.ndarray, lock: mp.Lock = None) -> pd.Series:
     logger = logging.getLogger(__name__)
     logger.debug(f"Scoring measurement {measurement.name}")
     tData = measurement.loadTransformedData(templateIdTag=templateIdTag)
@@ -57,6 +57,7 @@ def _score(measurement: ITOMeasurement, scoreName: str, blurSigma: float, templa
     finally:
         if lock is not None:
             lock.release()
+        return pd.Series({'measurement': measurement, 'score': score})
 
 
 def parallelInit(lck: mp.Lock, templateArr: np.ndarray):
@@ -106,7 +107,6 @@ class TransformedDataScorer:
         df = pd.DataFrame({"measurement": loader.measurements})
 
         if parallel:
-            # m = mp.Manager()
             mplogger = mp.get_logger()
             mplogger.setLevel(logging.WARNING)
             lock = mp.Lock()
@@ -116,6 +116,7 @@ class TransformedDataScorer:
         else:
             procArgs = (scoreName, blurSigma, loader.template.idTag, templateArr)
             out = df.apply(lambda row: _score(row.measurement, *procArgs), axis=1)
+        self.output = pd.DataFrame(out)
 
 
 class TransformedDataSaver:
@@ -230,3 +231,4 @@ class Analyzer:
                  method: TransformGenerator.Method = TransformGenerator.Method.XCORR, blurSigma: float = None):
         self.transformer = TransformedDataSaver(loader, useCached, debugMode, method)
         self.scorer = TransformedDataScorer(loader, 'score', blurSigma)
+        self.output = self.scorer.output

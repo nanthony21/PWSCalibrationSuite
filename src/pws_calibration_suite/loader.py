@@ -7,6 +7,7 @@ from pws_calibration_suite.comparison import ITOMeasurement, AbstractMeasurement
 import pwspy.analysis.pws as pwsAnalysis
 import pwspy.dataTypes as pwsdt
 import pathlib as pl
+from pwspy.utility.acquisition import loadDirectory
 
 #TODO, copied not changed.
 class DefaultLoader(AbstractMeasurementLoader):
@@ -34,7 +35,7 @@ class DefaultLoader(AbstractMeasurementLoader):
 
     @classmethod
     def generateITOMeasurements(cls, rootDir: os.PathLike, readOnly: bool):
-        seq, acqs = pwspy.utility.acquisition.loadDirectory(rootDir)
+        seq, acqs = loadDirectory(rootDir)
         acqs = [acq.acquisition for acq in acqs]
         itoAcq, refAcq, glassAcq, scatterAcq = acqs
 
