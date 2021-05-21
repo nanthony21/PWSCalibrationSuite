@@ -27,12 +27,11 @@ class Controller:
         path.mkdir()
         sequencerapi.setSavePath(str(path))
         sequencerapi.runSequence()
-        time.sleep(1)  # TODO It takes a while for `isSequenceRunning` to return flse, must pause a little.
         while sequencerapi.isSequenceRunning():
             time.sleep(1)
 
         loader = DefaultLoader(path)
-        an = Analyzer(loader, blurSigma=7)
+        an = Analyzer(loader, blurSigma=3)
         a = 1
 
     def snap(self):
