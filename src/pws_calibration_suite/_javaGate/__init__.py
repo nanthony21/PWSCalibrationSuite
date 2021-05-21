@@ -48,7 +48,8 @@ class MMGate:
         self._connected = True
 
     def close(self):
-        # disconnect
+        self._gw = self.mm = self.pws = None
+        self._connected = False
         pass
 
 if __name__ == '__main__':
