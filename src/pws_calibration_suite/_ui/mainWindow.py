@@ -1,6 +1,7 @@
 import logging
 
 from PyQt5 import QtCore, QtGui
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QDockWidget, QMessageBox
 import os
 import pwspy.utility.acquisition
@@ -17,8 +18,9 @@ class MainWindow(QMainWindow):
     def __init__(self, mmGate: MMGate):
         super().__init__()
         self.setWindowTitle("PWS Calibration Suite")
-        self._controller = Controller(mmGate)
+        self.setWindowIcon(QIcon(str(targetIconPath)))
 
+        self._controller = Controller(mmGate)
         leftWidget = QDockWidget(parent=self)
         leftWidget.setTitleBarWidget(QWidget())  # Get rid of the title bar
         leftWidget.setFeatures(QDockWidget.NoDockWidgetFeatures)
