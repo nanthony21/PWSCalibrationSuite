@@ -12,6 +12,8 @@ import pandas as pd
 from scipy.ndimage import binary_dilation
 from pws_calibration_suite.comparison.TransformGenerator import TransformGenerator
 from pwspy.utility.fileIO import processParallel
+
+from . import ITOMeasurement
 from ._scorers import *
 from ._utility import CVAffineTransform
 from .fileTypes import TransformedData
@@ -80,9 +82,23 @@ def createSharedArray(array: np.ndarray) -> np.ndarray:
 
 
 class TransformedDataScorer:
-    """This class uses a template measurement to analyze a series of other measurements and give them scores for how well they match to the template."""
+    """This class uses a template measurement to analyze a series of other measurements and give them scores for how
+     well they match to the template.
 
-    def __init__(self, loader: AbstractMeasurementLoader, scoreName: str, blurSigma: t_.Optional[float] = 2, parallel: bool = False):
+     Args:
+        loader: A data loader object that provides access to a `template` measurement and a sequence of `measurement`
+            measurements.
+        scoreName: This string is used to save the score information to the "TransformedData" file. Each file can only
+            have a single score for a given name.
+        blurSigma: This value determines the `sigma` of the gaussian blur of the template and measurement data that occurs
+            at the beginning of the scoring process. This blur helps to reduce the effects of random measurement noise
+            and slight pixel-scale differences in data alignment. Too much blurring can reduce sensitivity of the scorers.
+        parallel: If `True` the measurements will be scored in parallel on multiple cores. Will use much more RAM but
+            will be faster in most situations when many measurements need to be scored.
+     """
+
+    def __init__(self, loader: AbstractMeasurementLoader, scoreName: str, blurSigma: t_.Optional[float] = 2,
+                 parallel: bool = False):
         # Scoring the bulk arrays
         templateArr: np.ndarray = (loader.template.analysisResults.reflectance + loader.template.analysisResults.meanReflectance[:, :, None]).data
         if blurSigma is not None:
@@ -104,12 +120,18 @@ class TransformedDataScorer:
 
 class TransformedDataSaver:
     """
-    This class uses a template measurement to identify the affine transformation between the template data and the test data. The test data is
-    aligned to the template and saved to an HDF file.
-
+    This class uses a template measurement to identify the affine transformation between the template data and the test
+    data. The test data is aligned to the template and saved to an HDF file.
 
     Args:
-        loader: An object that loads the template and measurements from file.
+        loader: A data loader object that provides access to a `template` measurement and a sequence of `measurement`
+            measurements.
+        useCached: If `True` then load cached information about the affine transforms if available. Saves processing time.
+        debugMode: Runs the data transform generator in debug mode. Plots will be opened that display the results of
+            the transform generation.
+        method: Selects which method the transform generator should use. All possible options are stored in the
+            `TransformGenerator.Method` enum.
+
     """
     def __init__(self, loader: AbstractMeasurementLoader, useCached: bool = True, debugMode: bool = False, method: TransformGenerator.Method = TransformGenerator.Method.XCORR):
         self._loader = loader
@@ -188,6 +210,22 @@ class TransformedDataSaver:
 
 
 class Analyzer:
+    """
+    Takes raw data and analyzes it. First by establishing affine transforms from the template to the measurements
+    and then by running a variety of "Scoring" routines that compare the template to the transformated measurement
+    data.
+
+    Args:
+        loader: A data loader object that provides access to a `template` measurement and a sequence of `measurement`
+            measurements.
+        useCached: If `True` then load cached information about the affine transforms if available. Saves processing time.
+        debugMode: Runs the data transform generator in debug mode. Plots will be opened that display the results of
+            the transform generation.
+        method: Selects which method the transform generator should use. All possible options are stored in the
+            `TransformGenerator.Method` enum.
+        blurSigma: This value sets the `sigma` of the gaussian blur that occurs at the beginning of the scoring process.
+            Units are in pixels. See documentation for `TransformedDataScorer` for more information.
+    """
     def __init__(self, loader: AbstractMeasurementLoader, useCached: bool = True, debugMode: bool = False,
                  method: TransformGenerator.Method = TransformGenerator.Method.XCORR, blurSigma: float = None):
         self.transformer = TransformedDataSaver(loader, useCached, debugMode, method)
