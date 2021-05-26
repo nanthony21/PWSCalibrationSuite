@@ -29,9 +29,9 @@ if __name__ == '__main__':
     from pws_calibration_suite.testScripts import experimentInfo
     plt.ion()
     logger = configureLogger()
-    measurementSet = 'xcorr_test'
+    measurementSet = 'xcorr_cdr_sift_test'
     loader = Loader(experimentInfo.workingDirectory, measurementSet)
-    transformer = TransformedDataSaver(loader, useCached=True, debugMode=False, method=TransformGenerator.Method.XCORR)
+    transformer = TransformedDataSaver(loader, useCached=True, debugMode=True, method=TransformGenerator.Method.SIFT)
 
     # CLear all existing scores.
     for m in loader.measurements:
@@ -43,6 +43,6 @@ if __name__ == '__main__':
         logger.info(f"Starting blur {blur}")
         stime = time.time()
         scorer = TransformedDataScorer(loader, str(blur), blurSigma=blur,
-                                       parallel=False)
+                                       parallel=True)
         logger.info(f"Total score time: {time.time() - stime}")
     a = 1  # BreakPoint

@@ -7,6 +7,8 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 
+saveScaler = False  # If `True` then save scaler model to file for later use.
+
 def make_spider(pandasRow: pd.Series, title: str, color: str, rMax: float = None):
     """Alternative copied from https://python-graph-gallery.com/392-use-faceting-for-radar-chart"""
     # number of variable
@@ -87,5 +89,8 @@ if __name__ == '__main__':
             p.set_color('green')
     plt.xticks(rotation=20)
 
+    if saveScaler:
+        import joblib
+        joblib.dump(scaler, 'scaler.sklearn')
 
     a = 1
