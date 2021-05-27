@@ -25,7 +25,7 @@ class App(QApplication):
     def __init__(self):
         super().__init__([])
         style = random.choice([qdarkstyle.dark.palette.DarkPalette, qdarkstyle.light.palette.LightPalette])
-        self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=style))
+        # self.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5', palette=style))
         self._mmGate = MMGate()
         try:
             self._mmGate.connect(timeout=.05)  # Try connecting immediately in case an instanse is already running.

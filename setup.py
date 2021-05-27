@@ -37,6 +37,7 @@ setup(name='pws_calibration_suite',
                         'opencv-python', #opencv is required but naming differences between conda and pip seem to cause issues. Maybe should be commented out?
                         'scikit-image',
                         'pwspy',
+                        'mpl_qt_viz',
                         'py4j',
                         'pyqt5',
                         'qdarkstyle'

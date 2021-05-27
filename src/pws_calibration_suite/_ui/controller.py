@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 import os
 import shutil
@@ -34,11 +35,10 @@ class Controller:
         loader = DefaultLoader(path)
         return loader
 
-    def snap(self):
+    def snap(self) -> Image:
         im = self._mmGate.mm.live().snap(False)[0]
         self.im = Image.fromJava(im)
-        import matplotlib.pyplot as plt
-        plt.imshow(self.im.arr, cmap='gray')
+        return self.im
 
 
 class Image:

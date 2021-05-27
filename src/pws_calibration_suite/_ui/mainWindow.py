@@ -14,6 +14,7 @@ from pws_calibration_suite.scoring import generateFeatures
 import joblib
 from sklearn.preprocessing import StandardScaler
 
+
 class MainWindow(QMainWindow):
     def __init__(self, mmGate: MMGate):
         super().__init__()
@@ -21,14 +22,15 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(str(targetIconPath)))
 
         self._controller = Controller(mmGate)
+        self._visualizerWidg = ScoreVisualizer(self)
+
         leftWidget = QDockWidget(parent=self)
-        self._acquireWidg = AcquireWidget(self._controller, parent=leftWidget)
+        self._acquireWidg = AcquireWidget(self._controller, self._visualizerWidg, parent=leftWidget)
 
         leftWidget.setTitleBarWidget(QWidget())  # Get rid of the title bar
         leftWidget.setFeatures(QDockWidget.NoDockWidgetFeatures)
         leftWidget.setWidget(self._acquireWidg)
 
-        self._visualizerWidg = ScoreVisualizer(self)
         self.setCentralWidget(self._visualizerWidg)
         self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, leftWidget)
 
@@ -45,9 +47,10 @@ class MainWindow(QMainWindow):
 class AcquireWidget(QWidget):
     newDataAcquired = pyqtSignal(pd.DataFrame)
 
-    def __init__(self, controller: Controller, parent: QWidget = None):
+    def __init__(self, controller: Controller, visualizer: ScoreVisualizer, parent: QWidget = None):
         super().__init__(parent=parent)
         self._controller = controller
+        self._visualizer = visualizer
 
         self._openMMButton = QPushButton("Open Acquisiton Software", self)
         self._openMMButton.released.connect(self._openMicroManager)
@@ -57,10 +60,10 @@ class AcquireWidget(QWidget):
         self._connectButton.released.connect(self._connectMM)
 
         self._runButton = QPushButton("Run Calibration", self)
-        self._runButton.released.connect(self.acquire) # lambda: QMessageBox.information(self, "NotImplemented", "Not Implemented!"))
+        self._runButton.released.connect(self.acquire)  # lambda: QMessageBox.information(self, "NotImplemented", "Not Implemented!"))
 
         self._snapButton = QPushButton("Snap", self)
-        self._snapButton.released.connect(self._controller.snap)
+        self._snapButton.released.connect(self._snap)
 
         l = QVBoxLayout()
         l.addWidget(self._openMMButton)
@@ -92,6 +95,11 @@ class AcquireWidget(QWidget):
             self._connectButton.setText("Disconnect")
         else:
             pass
+
+    def _snap(self):
+        image = self._controller.snap()
+        fig, ax = self._visualizer.addSubplot("Snap")
+        ax.imshow(image.arr, cmap='gray')
 
     def acquire(self) -> pd.DataFrame:
         path = pl.Path.home() / 'testingAcquisition'
