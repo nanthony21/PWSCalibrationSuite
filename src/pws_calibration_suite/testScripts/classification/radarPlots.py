@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     scaler = StandardScaler()
     scaler.fit(df[inputCols][df['isref']])
-    df[inputCols] = (scaler.transform(df[inputCols]))/100 + 1  # the 100 is totally arbitrary here
+    df[inputCols] = (scaler.transform(df[inputCols]))/100 + 1  # the 100 is totally arbitrary here. The +1 is because if the values are centered around 0 they won't show up on the radar plot well.
     print(scaler.scale_, scaler.mean_)
 
 

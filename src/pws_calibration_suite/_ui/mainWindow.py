@@ -7,11 +7,12 @@ from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QDoc
 from pws_calibration_suite._ui.controller import Controller
 from pws_calibration_suite._javaGate import MMGate
 import pathlib as pl
-from pws_calibration_suite import targetIconPath
+from pws_calibration_suite import targetIconPath, scalerPath
 from pws_calibration_suite._ui.scorevisualizer import ScoreVisualizer
 from pws_calibration_suite.comparison.analyzer import Analyzer
 from pws_calibration_suite.scoring import generateFeatures
-
+import joblib
+from sklearn.preprocessing import StandardScaler
 
 class MainWindow(QMainWindow):
     def __init__(self, mmGate: MMGate):
@@ -100,6 +101,8 @@ class AcquireWidget(QWidget):
         an = Analyzer(loader, blurSigma=3)
         # Convert the score object to an dataframe of values
         df = generateFeatures(an.output)
+        scaler: StandardScaler = joblib.load(scalerPath)
+        df[:] = scaler.transform(df) / 100 + 1
         self.newDataAcquired.emit(df)
         return an.output
 

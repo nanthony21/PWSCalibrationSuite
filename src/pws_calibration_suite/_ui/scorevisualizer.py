@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 
 
@@ -57,8 +58,10 @@ class ScoreVisualizer(QWidget):
         fig = plt.figure()
         fig.patch.set_alpha(0.1)
         self._canvas = FigureCanvasQTAgg(fig)
+        self._toolbar = NavigationToolbar2QT(self._canvas, self, coordinates=False)
         l = QGridLayout()
         l.addWidget(self._canvas, 0, 0)
+        l.addWidget(self._toolbar, 1, 0)
         self.setLayout(l)
 
     def setData(self, data: pd.Series):

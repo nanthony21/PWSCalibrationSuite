@@ -38,7 +38,7 @@ class Controller:
         im = self._mmGate.mm.live().snap(False)[0]
         self.im = Image.fromJava(im)
         import matplotlib.pyplot as plt
-        plt.imshow(self.im.arr)
+        plt.imshow(self.im.arr, cmap='gray')
 
 
 class Image:
