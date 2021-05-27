@@ -91,6 +91,7 @@ if __name__ == '__main__':
 
     if saveScaler:
         import joblib
-        joblib.dump(scaler, 'scaler.sklearn')
+        from pws_calibration_suite import scalerPath
+        joblib.dump(scaler, str(scalerPath))
 
     a = 1
