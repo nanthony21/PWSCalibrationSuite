@@ -48,9 +48,6 @@ class ScoreVisualizer(QWidget):
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self._dockWidg = DockablePlotWindow()
-        for i in [1, 2, 3]:
-            fig, ax = self._dockWidg.subplots(f"test{i}")
-            ax.imshow([[0, 1], [1, 0]])
         l = QGridLayout()
         l.addWidget(self._dockWidg, 0, 0)
         self.setLayout(l)
@@ -62,4 +59,4 @@ class ScoreVisualizer(QWidget):
     def setData(self, data: pd.Series):
         row = data.iloc[0]  # We are assuming there is only one measurement (row) in the dataframe.
         fig, ax = self.addSubplot("Calibration Result", polar=True)
-        ax = make_spider(ax, row, "Calibration Result", 'blue', None)
+        ax = make_spider(ax, row, 'blue', None)
