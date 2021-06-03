@@ -15,7 +15,7 @@ from pws_calibration_suite._ui import MainWindow
 
 
 def configureLogger():
-    logger = logging.getLogger("pwspy")  # We get the root logger so that all loggers in pwspy will be handled.
+    logger = logging.getLogger("pws_calibration_suite")  # We get the root logger so that all loggers in pwspy will be handled.
     logger.setLevel(logging.DEBUG)
     logger.addHandler(logging.StreamHandler(sys.stdout))
     return logger
@@ -44,7 +44,7 @@ def main():
     directory = r'\\BackmanLabNAS\home\Year3\ITOPositionStability\AppTest'
 
     logger = configureLogger()
-
+    logger.debug("Starting application.")
     app = App()
     app.exec()
 

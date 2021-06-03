@@ -105,7 +105,7 @@ class AcquireWidget(QWidget):
         path = pl.Path.home() / 'testingAcquisition'
         if not path.exists():
             path.mkdir()
-        loader = self._controller.acquire(path)
+        loader = self._controller.acquire(path, simulated=True)
         an = Analyzer(loader, blurSigma=3)
         # Convert the score object to an dataframe of values
         df = generateFeatures(an.output)

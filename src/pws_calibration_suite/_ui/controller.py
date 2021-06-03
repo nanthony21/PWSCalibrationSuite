@@ -20,19 +20,33 @@ class Controller:
     def getGate(self) -> MMGate:
         return self._mmGate
 
-    def acquire(self, path: pl.Path) -> DefaultLoader:
-        from pws_calibration_suite import calibrationSequenceFile
-        sequencerapi = self._mmGate.pws.sequencer()
-        sequencerapi.loadSequence(str(calibrationSequenceFile))
-        if path.exists():
-            shutil.rmtree(path)
-        path.mkdir()
-        sequencerapi.setSavePath(str(path))
-        sequencerapi.runSequence()
-        while sequencerapi.isSequenceRunning():
-            time.sleep(.5)
+    def acquire(self, path: pl.Path, simulated: bool = False) -> DefaultLoader:
+        """
+        Command the acquisition software to acquire a sequence acquisition.
 
+        Args:
+            path: The file path to save the data to.
+            simulated: If `True` then existing data is loaded without actually having the acquisition software run anything.
+
+        Returns:
+            A `Loader` object to provide access to the acquired data.
+        """
+        logger = logging.getLogger(__name__)
+        logger.debug("Starting acquisition.")
+        if not simulated:
+            from pws_calibration_suite import calibrationSequenceFile
+            sequencerapi = self._mmGate.pws.sequencer()
+            sequencerapi.loadSequence(str(calibrationSequenceFile))
+            if path.exists():
+                shutil.rmtree(path)
+            path.mkdir()
+            sequencerapi.setSavePath(str(path))
+            sequencerapi.runSequence()
+            while sequencerapi.isSequenceRunning():
+                time.sleep(.5)
+        logger.debug("Loading.")
         loader = DefaultLoader(path)
+        logger.debug("Done loading.")
         return loader
 
     def snap(self) -> Image:
