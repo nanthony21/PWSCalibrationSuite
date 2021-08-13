@@ -8,7 +8,6 @@ import numpy as np
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from mpl_qt_viz.visualizers import DockablePlotWindow
-from pip._internal.utils import logging
 from qtpy import QtCore
 
 
@@ -149,9 +148,8 @@ class OptionDialog(QWidget):
         self._timer.setSingleShot(False)
         self._timer.timeout.connect(self._evalTimer)
         self._timer.start()
-        self.slider = QSlider(QtCore.Qt.Vertical, self)
+        self.slider = QSlider(QtCore.Qt.Horizontal, self)
         self.slider.sliderReleased.connect(lambda: self.slider.setValue(0))
-        self.slider.valueChanged.connect(self._sliderValChanged)
         self.slider.setMinimum(-10)
         self.slider.setMaximum(10)
 
@@ -160,32 +158,19 @@ class OptionDialog(QWidget):
         self.radiusBox.setValue(self.sliderVal)
         self.radiusBox.valueChanged.connect(self._valChanged)
 
-        # okButton = QPushButton("OK", self)
-        # okButton.released.connect(self.accept)
-
         l = QFormLayout()
         l.addRow(self.slider)
         l.addRow("Radius: ", self.radiusBox)
-        # l.addRow(okButton)
         self.setLayout(l)
 
     def _valChanged(self, value: float):
         self._ax.set_ylim(0, value)
         self._canv.draw_idle()
 
-    def _sliderValChanged(self, value: float):
-        pass
-        # self.sliderVal = val
-        # self.radiusBox.setValue(val)
-
     def _evalTimer(self):
         value = self.slider.value()
         # Convert value
         neg = -1 if value < 0 else 1
-        logging.getLogger(__name__).debug(f"{value}")
         value = neg * (2**(abs(value)/10) - 1)  # TODO exponent
-        logging.getLogger(__name__).debug(f"b{value}")
         val = self._ax.get_ylim()[1] + value
         self.radiusBox.setValue(val)
-        # self._ax.set_ylim(0, val)
-        # self._canv.draw_idle()
