@@ -1,15 +1,13 @@
 import os
 import typing
-
-import pwspy
-
 from pws_calibration_suite.comparison import ITOMeasurement, AbstractMeasurementLoader
 import pwspy.analysis.pws as pwsAnalysis
 import pwspy.dataTypes as pwsdt
 import pathlib as pl
 from pwspy.utility.acquisition import loadDirectory
 
-#TODO, copied not changed.
+
+# TODO, copied not changed.
 class DefaultLoader(AbstractMeasurementLoader):
     """
     An ITO calibration loader for the automated calibration acquisition.
