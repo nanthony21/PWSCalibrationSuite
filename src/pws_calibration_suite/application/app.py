@@ -3,7 +3,7 @@ import random
 import qdarkstyle
 from PyQt5.QtWidgets import QApplication
 
-from pws_calibration_suite.application._javaGate import MMGate
+from pws_calibration_suite.application.javaGate._mmGate import MMGate
 from pws_calibration_suite.application._ui import MainWindow
 
 

@@ -1,19 +1,18 @@
+from __future__ import annotations
 import logging
-import pandas as pd
 import py4j.protocol
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QDockWidget, QMessageBox
-from pws_calibration_suite.application._ui.controller import Controller
-from pws_calibration_suite.application._javaGate import MMGate
-import pathlib as pl
-from pws_calibration_suite import targetIconPath, scalerPath
-from pws_calibration_suite.application._ui.scorevisualizer import ScoreVisualizer
-from pws_calibration_suite.comparison.analyzer import Analyzer
-from pws_calibration_suite.scoring import generateFeatures
-import joblib
-from sklearn.preprocessing import StandardScaler
+from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QDockWidget, QMessageBox, QFrame, QLabel
+from mpl_qt_viz.visualizers import DockablePlotWindow
+
+from pws_calibration_suite.application.calibrationRoutines import RoutinePluginManager
+from pws_calibration_suite.application.controller import Controller
+from pws_calibration_suite import targetIconPath
+import typing as t_
+if t_.TYPE_CHECKING:
+    from pws_calibration_suite.application.javaGate._mmGate import MMGate
 
 
 class MainWindow(QMainWindow):
@@ -23,7 +22,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(str(targetIconPath)))
 
         self._controller = Controller(mmGate)
-        self._visualizerWidg = ScoreVisualizer(self)
+        self._visualizerWidg = DockablePlotWindow()
 
         leftWidget = QDockWidget(parent=self)
         self._acquireWidg = AcquireWidget(self._controller, self._visualizerWidg, parent=leftWidget)
@@ -37,39 +36,39 @@ class MainWindow(QMainWindow):
 
         self.resize(1024, 768)
 
-        self._acquireWidg.newDataAcquired.connect(self._visualizerWidg.setData)
-
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         self._controller.getGate().close()
         super().closeEvent(a0)
 
 
 class AcquireWidget(QWidget):
-    newDataAcquired = pyqtSignal(pd.DataFrame)
 
-    def __init__(self, controller: Controller, visualizer: ScoreVisualizer, parent: QWidget = None):
+    def __init__(self, controller: Controller, visualizer: DockablePlotWindow, parent: QWidget = None):
         super().__init__(parent=parent)
         self._controller = controller
         self._visualizer = visualizer
 
-        # self._openMMButton = QPushButton("Open Acquisiton Software", self)
-        # self._openMMButton.released.connect(self._openMicroManager)
+        self._routineManager = RoutinePluginManager(self._controller, self._visualizer, self)
 
         self._connectButton = QPushButton("", self)
         self._connectButton.released.connect(self._connectMM)
         self._setUIConnected(self._controller.getGate().isConnected())
 
-        self._runButton = QPushButton("Run Calibration", self)
-        self._runButton.released.connect(self.acquire)  # lambda: QMessageBox.information(self, "NotImplemented", "Not Implemented!"))
-
         self._snapButton = QPushButton("Snap", self)
         self._snapButton.released.connect(self._snap)
 
         l = QVBoxLayout()
-        # l.addWidget(self._openMMButton)
         l.addWidget(self._connectButton)
-        l.addWidget(self._runButton)
         l.addWidget(self._snapButton)
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        l.addWidget(line)
+        l.addWidget(QLabel("Calibration Routines"))
+        for i in self._routineManager.getPlugins():
+            button = QPushButton(i.getName(), self)
+            button.released.connect(lambda routine=i: routine.run())
+            l.addWidget(button)
         l.addWidget(QWidget(), stretch=1)  # Push other widgets up.
 
         self.setLayout(l)
@@ -116,20 +115,8 @@ class AcquireWidget(QWidget):
         except py4j.protocol.Py4JError as e:
             QMessageBox.warning(self, "Error", f"Snap failed with error: {str(e)}")
             return
-        fig, ax = self._visualizer.addSubplot("Snap")
+        fig, ax = self._visualizer.subplots("Snap")
         ax.imshow(image.arr, cmap='gray')
 
-    def acquire(self) -> pd.DataFrame:
-        path = pl.Path.home() / 'testingAcquisition'
-        if not path.exists():
-            path.mkdir()
-        loader = self._controller.acquire(path, simulated=True)
-        an = Analyzer(loader, blurSigma=3)
-        # Convert the score object to an dataframe of values
-        df = generateFeatures(an.output)
-        scaler: StandardScaler = joblib.load(scalerPath)
-        df[:] = scaler.transform(df) / 100 + 1
-        self.newDataAcquired.emit(df)
-        return an.output
 
 

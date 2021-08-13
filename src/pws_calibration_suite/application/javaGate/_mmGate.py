@@ -1,10 +1,10 @@
+import os
+import pathlib as pl
 import subprocess
 from time import time
 
-from py4j.java_gateway import JavaGateway
 import py4j
-import pathlib as pl
-import os
+from py4j.java_gateway import JavaGateway
 
 
 class MMGate:
@@ -80,10 +80,3 @@ class MMGate:
         """
         self._gw = self.mm = self.pws = None
         self._connected = False
-
-
-if __name__ == '__main__':
-
-
-
-    a = 1

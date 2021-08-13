@@ -6,27 +6,6 @@ import pandas as pd
 import numpy as np
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from mpl_qt_viz.visualizers import DockablePlotWindow
-
-
-class ScoreVisualizer(QWidget):
-    def __init__(self, parent: QWidget):
-        super().__init__(parent)
-        self._dockWidg = DockablePlotWindow()
-        l = QGridLayout()
-        l.addWidget(self._dockWidg, 0, 0)
-        self.setLayout(l)
-
-    def addSubplot(self, title: str, polar: bool = False):
-        fig, ax = self._dockWidg.subplots(title, subplot_kw={'polar': polar})
-        return fig, ax
-
-    def setData(self, data: pd.Series):
-        row = data.iloc[0]  # We are assuming there is only one measurement (row) in the dataframe.
-        # fig, ax = self.addSubplot("Calibration Result", polar=True)
-        # ax = make_spider(ax, row, 'blue', None)
-        _ = RadarPlot(self, row)
-        self._dockWidg.addWidget(_, "Calibration Results")
 
 
 class RadarPlot(QWidget):
