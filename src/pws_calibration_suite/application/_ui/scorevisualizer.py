@@ -1,7 +1,6 @@
-import logging
 from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QDialog, QFormLayout, QSpinBox, QDoubleSpinBox, QSlider
+from PyQt5.QtWidgets import QWidget, QGridLayout, QFormLayout, QDoubleSpinBox, QSlider
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
