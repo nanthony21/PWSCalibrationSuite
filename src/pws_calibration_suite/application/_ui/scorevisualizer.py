@@ -1,5 +1,5 @@
 import logging
-
+from PyQt5 import QtCore
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QWidget, QGridLayout, QPushButton, QDialog, QFormLayout, QSpinBox, QDoubleSpinBox, QSlider
 import matplotlib.pyplot as plt
@@ -8,46 +8,6 @@ import numpy as np
 from matplotlib.backends.backend_qt5 import NavigationToolbar2QT
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from mpl_qt_viz.visualizers import DockablePlotWindow
-from qtpy import QtCore
-
-
-# def make_spider(ax: plt.Axes, pandasRow: pd.Series, color: str, rMax: float = None) -> plt.Axes:
-#     """Copied from https://python-graph-gallery.com/392-use-faceting-for-radar-chart
-#     Creates a Radar plot from the values in a pandas series.
-#
-#     Args:
-#         pandasRow: A `Series` containing values for a number of different parameters.
-#         color: The matplotlib `color` to use.
-#         rMax: The maximum radius of the radar plot. If left as `None` this will be set to the maximum value of
-#             `pandasRow`.
-#     """
-#     # number of variable
-#     categories = list(pandasRow.index)
-#     N = len(categories)
-#
-#     # What will be the angle of each axis in the plot? (we divide the plot / number of variable)
-#     angles = [n / float(N) * 2 * np.pi for n in range(N)]
-#     angles += angles[:1]
-#
-#     # If you want the first axis to be on top:
-#     ax.set_theta_offset(np.pi / 2)
-#     ax.set_theta_direction(-1)
-#
-#     # Draw one axe per variable + add labels labels yet
-#     plt.xticks(angles[:-1], categories, color='grey', size=8)
-#
-#     # Draw ylabels
-#     ax.set_rlabel_position(0)
-#     rMax = max(pandasRow) if rMax is None else rMax
-#     plt.ylim(0, rMax)
-#
-#     # Ind1
-#     values = pandasRow.values.flatten().tolist()
-#     values += values[:1]
-#     ax.plot(angles, values, color=color, linewidth=2, linestyle='solid')
-#     ax.fill(angles, values, color=color, alpha=0.4)
-
-    # return ax
 
 
 class ScoreVisualizer(QWidget):

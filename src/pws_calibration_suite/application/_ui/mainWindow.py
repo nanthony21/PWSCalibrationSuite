@@ -41,7 +41,6 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         self._controller.getGate().close()
-        print("Closing!")
         super().closeEvent(a0)
 
 
