@@ -1,5 +1,6 @@
 import logging
 import pandas as pd
+import py4j.protocol
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
@@ -52,8 +53,8 @@ class AcquireWidget(QWidget):
         self._controller = controller
         self._visualizer = visualizer
 
-        self._openMMButton = QPushButton("Open Acquisiton Software", self)
-        self._openMMButton.released.connect(self._openMicroManager)
+        # self._openMMButton = QPushButton("Open Acquisiton Software", self)
+        # self._openMMButton.released.connect(self._openMicroManager)
 
         self._connectButton = QPushButton("", self)
         self._connectButton.released.connect(self._connectMM)
@@ -66,7 +67,7 @@ class AcquireWidget(QWidget):
         self._snapButton.released.connect(self._snap)
 
         l = QVBoxLayout()
-        l.addWidget(self._openMMButton)
+        # l.addWidget(self._openMMButton)
         l.addWidget(self._connectButton)
         l.addWidget(self._runButton)
         l.addWidget(self._snapButton)
@@ -95,21 +96,27 @@ class AcquireWidget(QWidget):
         logger = logging.getLogger(__name__)
         if not self._isUIConnected():
             try:
-                self._controller.getGate().connect()
+                self._controller.getGate().connect(timeout=0.5)
+                self._setUIConnected(True)
             except TimeoutError as e:
-                QMessageBox.warning(self, "Connection Timed Out", str(e))
-                logger.exception(e)
+                result = QMessageBox.question(self, "Open Micro-Manager?",
+                                     "Could not find an instance of PWS Micro-Manager. Attempt to open a new instance?")
+                if result == QMessageBox.Yes:
+                    self._openMicroManager()
                 return
             except Exception as e:
-                QMessageBox.warning(self, "Connection Timed Out", str(e))
+                QMessageBox.warning(self, "Connection Error", str(e))
                 logger.exception(e)
                 return
-            self._setUIConnected(True)
         else:
             RuntimeError("Reached unallowed condition.")
 
     def _snap(self):
-        image = self._controller.snap()
+        try:
+            image = self._controller.snap()
+        except py4j.protocol.Py4JError as e:
+            QMessageBox.warning(self, "Error", f"Snap failed with error: {str(e)}")
+            return
         fig, ax = self._visualizer.addSubplot("Snap")
         ax.imshow(image.arr, cmap='gray')
 
