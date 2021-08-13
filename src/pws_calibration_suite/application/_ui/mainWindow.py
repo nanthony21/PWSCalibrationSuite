@@ -4,11 +4,11 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget, QDockWidget, QMessageBox
-from pws_calibration_suite._ui.controller import Controller
-from pws_calibration_suite._javaGate import MMGate
+from pws_calibration_suite.application._ui.controller import Controller
+from pws_calibration_suite.application._javaGate import MMGate
 import pathlib as pl
 from pws_calibration_suite import targetIconPath, scalerPath
-from pws_calibration_suite._ui.scorevisualizer import ScoreVisualizer
+from pws_calibration_suite.application._ui.scorevisualizer import ScoreVisualizer
 from pws_calibration_suite.comparison.analyzer import Analyzer
 from pws_calibration_suite.scoring import generateFeatures
 import joblib
@@ -55,9 +55,9 @@ class AcquireWidget(QWidget):
         self._openMMButton = QPushButton("Open Acquisiton Software", self)
         self._openMMButton.released.connect(self._openMicroManager)
 
-        connectStr = "Disconnect" if self._controller.getGate().isConnected() else "Connect"
-        self._connectButton = QPushButton(connectStr, self)
+        self._connectButton = QPushButton("", self)
         self._connectButton.released.connect(self._connectMM)
+        self._setUIConnected(self._controller.getGate().isConnected())
 
         self._runButton = QPushButton("Run Calibration", self)
         self._runButton.released.connect(self.acquire)  # lambda: QMessageBox.information(self, "NotImplemented", "Not Implemented!"))
@@ -75,12 +75,25 @@ class AcquireWidget(QWidget):
         self.setLayout(l)
 
     def _openMicroManager(self):
-        mmPath = r'C:\Program Files\PWSMicroManager'
-        self._controller.getGate().openMM(mmPath)
+        self._controller.getGate().openMM()
+        if self._controller.getGate().isConnected():
+            self._setUIConnected(True)
+
+    def _setUIConnected(self, connected: bool):
+        if connected:
+            # self._connectButton.setAutoFillBackground(True)
+            self._connectButton.setEnabled(False)
+            self._connectButton.setText("Connected")
+        else:
+            self._connectButton.setEnabled(True)
+            self._connectButton.setText("Connect")
+
+    def _isUIConnected(self) -> bool:
+        return not self._connectButton.text() == 'Connect'
 
     def _connectMM(self):
         logger = logging.getLogger(__name__)
-        if self._connectButton.text() == 'Connect':
+        if not self._isUIConnected():
             try:
                 self._controller.getGate().connect()
             except TimeoutError as e:
@@ -91,10 +104,9 @@ class AcquireWidget(QWidget):
                 QMessageBox.warning(self, "Connection Timed Out", str(e))
                 logger.exception(e)
                 return
-            self._connectButton.setAutoFillBackground(True)
-            self._connectButton.setText("Disconnect")
+            self._setUIConnected(True)
         else:
-            pass
+            RuntimeError("Reached unallowed condition.")
 
     def _snap(self):
         image = self._controller.snap()
