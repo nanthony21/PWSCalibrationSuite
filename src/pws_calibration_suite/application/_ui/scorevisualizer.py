@@ -86,6 +86,7 @@ class OptionDialog(QWidget):
         self._timer.setSingleShot(False)
         self._timer.timeout.connect(self._evalTimer)
         self._timer.start()
+
         self.slider = QSlider(QtCore.Qt.Horizontal, self)
         self.slider.sliderReleased.connect(lambda: self.slider.setValue(0))
         self.slider.setMinimum(-10)
@@ -109,6 +110,6 @@ class OptionDialog(QWidget):
         value = self.slider.value()
         # Convert value
         neg = -1 if value < 0 else 1
-        value = neg * (2**(abs(value)/10) - 1)  # TODO exponent
+        value = neg * (2**(abs(value)/10) - 1)
         val = self._ax.get_ylim()[1] + value
         self.radiusBox.setValue(val)
